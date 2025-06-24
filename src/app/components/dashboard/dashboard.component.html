@@ -20,7 +20,7 @@
       <section class="stats-section">
         <h2 class="section-title">Genel Bakış</h2>
         <div class="stats-grid">
-          <div class="stat-card">
+          <div class="stat-card" (click)="onStatCardClick('projects')">
             <div class="stat-icon projects">
               <i class="fas fa-folder"></i>
             </div>
@@ -30,7 +30,7 @@
             </div>
           </div>
           
-          <div class="stat-card">
+          <div class="stat-card" (click)="onStatCardClick('tasks')">
             <div class="stat-icon tasks">
               <i class="fas fa-tasks"></i>
             </div>
@@ -40,7 +40,7 @@
             </div>
           </div>
           
-          <div class="stat-card">
+          <div class="stat-card" (click)="onStatCardClick('completed')">
             <div class="stat-icon completed">
               <i class="fas fa-check-circle"></i>
             </div>
@@ -50,7 +50,7 @@
             </div>
           </div>
           
-          <div class="stat-card">
+          <div class="stat-card" (click)="onStatCardClick('team')">
             <div class="stat-icon team">
               <i class="fas fa-users"></i>
             </div>
@@ -66,7 +66,9 @@
       <section class="activity-section">
         <h2 class="section-title">Son Aktiviteler</h2>
         <div class="activity-list">
-          <div class="activity-item" *ngFor="let activity of recentActivities">
+          <div class="activity-item" 
+               *ngFor="let activity of recentActivities"
+               (click)="onActivityClick(activity)">
             <div class="activity-icon">
               <i [class]="activity.iconClass"></i>
             </div>
@@ -88,7 +90,8 @@
         <div class="task-list">
           <div class="task-item" 
                *ngFor="let task of upcomingTasks" 
-               [ngClass]="'priority-' + task.priority.toLowerCase()">
+               [ngClass]="'priority-' + task.priority.toLowerCase()"
+               (click)="onTaskClick(task)">
             <div class="task-priority"></div>
             <div class="task-content">
               <h4 class="task-title">{{ task.title }}</h4>
@@ -116,19 +119,27 @@
       <section class="quick-actions-section">
         <h2 class="section-title">Hızlı Aksiyonlar</h2>
         <div class="quick-actions">
-          <button class="action-btn primary" (click)="createNewProject()">
+          <button class="action-btn primary" 
+                  (click)="createNewProject()" 
+                  title="Yeni proje oluştur">
             <i class="fas fa-plus"></i>
             Yeni Proje
           </button>
-          <button class="action-btn secondary" (click)="addNewTask()">
+          <button class="action-btn secondary" 
+                  (click)="addNewTask()"
+                  title="Yeni görev ekle">
             <i class="fas fa-tasks"></i>
             Görev Ekle
           </button>
-          <button class="action-btn tertiary" (click)="inviteTeamMember()">
+          <button class="action-btn tertiary" 
+                  (click)="inviteTeamMember()"
+                  title="Takım üyesi davet et">
             <i class="fas fa-user-plus"></i>
             Takım Davet Et
           </button>
-          <button class="action-btn info" (click)="viewReports()">
+          <button class="action-btn info" 
+                  (click)="viewReports()"
+                  title="Raporları görüntüle">
             <i class="fas fa-chart-bar"></i>
             Raporlar
           </button>

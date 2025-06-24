@@ -109,32 +109,92 @@ export class DashboardComponent implements OnInit {
     console.log('Dashboard statistics refreshed');
   }
 
-  // Quick Action Methods
+  // Quick Action Methods - Güvenli navigasyon ile
   createNewProject(): void {
     console.log('Creating new project...');
-    // Yeni proje oluşturma modalını aç veya sayfaya yönlendir
-    this.router.navigate(['/projects/new']);
+    try {
+      // Eğer route tanımlı değilse alternatif action
+      this.router.navigate(['/projects/new']).catch(error => {
+        console.warn('Route not found, showing alert instead');
+        alert('Yeni proje oluşturma sayfası henüz hazır değil. Geliştirme aşamasında...');
+      });
+    } catch (error) {
+      console.error('Navigation error:', error);
+      alert('Yeni proje oluşturma sayfası henüz hazır değil. Geliştirme aşamasında...');
+    }
   }
 
   addNewTask(): void {
     console.log('Adding new task...');
-    // Yeni görev ekleme modalını aç veya sayfaya yönlendir
-    this.router.navigate(['/tasks/new']);
+    try {
+      this.router.navigate(['/tasks/new']).catch(error => {
+        console.warn('Route not found, showing alert instead');
+        alert('Yeni görev ekleme sayfası henüz hazır değil. Geliştirme aşamasında...');
+      });
+    } catch (error) {
+      console.error('Navigation error:', error);
+      alert('Yeni görev ekleme sayfası henüz hazır değil. Geliştirme aşamasında...');
+    }
   }
 
   inviteTeamMember(): void {
     console.log('Inviting team member...');
-    // Takım üyesi davet etme modalını aç
-    // Modal service kullanılabilir
+    // Modal veya basit prompt kullanarak takım üyesi davet et
+    const email = prompt('Davet edilecek takım üyesinin email adresini girin:');
+    if (email && this.isValidEmail(email)) {
+      // Burada normalde API çağrısı yapılır
+      alert(`${email} adresine davet gönderildi!`);
+      console.log('Invitation sent to:', email);
+      
+      // Aktivite listesine ekle
+      this.recentActivities.unshift({
+        id: Date.now().toString(),
+        text: `Takım daveti gönderildi: ${email}`,
+        time: 'Şimdi',
+        iconClass: 'fas fa-envelope text-info'
+      });
+    } else if (email) {
+      alert('Geçerli bir email adresi girin.');
+    }
   }
 
   viewReports(): void {
     console.log('Viewing reports...');
-    // Raporlar sayfasına yönlendir
-    this.router.navigate(['/reports']);
+    try {
+      this.router.navigate(['/reports']).catch(error => {
+        console.warn('Route not found, showing reports modal instead');
+        this.showReportsModal();
+      });
+    } catch (error) {
+      console.error('Navigation error:', error);
+      this.showReportsModal();
+    }
   }
 
-  // Helper Methods
+  // Yardımcı metodlar
+  private isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  private showReportsModal(): void {
+    // Basit bir rapor özeti göster
+    const reportSummary = `
+📊 RAPOR ÖZETİ 📊
+
+🎯 Aktif Projeler: ${this.statsData.activeProjects}
+📋 Açık Görevler: ${this.statsData.openTasks}
+✅ Tamamlanan Görevler: ${this.statsData.completedTasks}
+👥 Takım Üyeleri: ${this.statsData.teamMembers}
+
+📈 Verimlilik: %${Math.round((this.statsData.completedTasks / (this.statsData.completedTasks + this.statsData.openTasks)) * 100)}
+
+Detaylı raporlar sayfası geliştirme aşamasında...
+    `;
+    alert(reportSummary);
+  }
+
+  // Diğer helper metodlar
   getPriorityClass(priority: string): string {
     switch (priority.toLowerCase()) {
       case 'high': return 'priority-high';
@@ -159,31 +219,53 @@ export class DashboardComponent implements OnInit {
   }
 
   onStatCardClick(statType: string): void {
-    switch (statType) {
-      case 'projects':
-        this.router.navigate(['/projects']);
-        break;
-      case 'tasks':
-        this.router.navigate(['/tasks']);
-        break;
-      case 'completed':
-        this.router.navigate(['/tasks'], { queryParams: { status: 'completed' } });
-        break;
-      case 'team':
-        this.router.navigate(['/team']);
-        break;
-      default:
-        console.log('Unknown stat type:', statType);
+    console.log('Stat card clicked:', statType);
+    try {
+      switch (statType) {
+        case 'projects':
+          this.router.navigate(['/projects']).catch(() => {
+            alert('Projeler sayfası henüz hazır değil.');
+          });
+          break;
+        case 'tasks':
+          this.router.navigate(['/tasks']).catch(() => {
+            alert('Görevler sayfası henüz hazır değil.');
+          });
+          break;
+        case 'completed':
+          this.router.navigate(['/tasks'], { queryParams: { status: 'completed' } }).catch(() => {
+            alert('Tamamlanan görevler sayfası henüz hazır değil.');
+          });
+          break;
+        case 'team':
+          this.router.navigate(['/team']).catch(() => {
+            alert('Takım sayfası henüz hazır değil.');
+          });
+          break;
+        default:
+          console.log('Unknown stat type:', statType);
+      }
+    } catch (error) {
+      console.error('Navigation error:', error);
     }
   }
 
   onActivityClick(activity: Activity): void {
     console.log('Activity clicked:', activity);
-    // Aktivite detayına git veya ilgili sayfaya yönlendir
+    alert(`Aktivite: ${activity.text}\nZaman: ${activity.time}`);
   }
 
   onTaskClick(task: UpcomingTask): void {
     console.log('Task clicked:', task);
-    this.router.navigate(['/tasks', task.id]);
+    const taskDetails = `
+🎯 GÖREV DETAYI
+
+📝 Başlık: ${task.title}
+📄 Açıklama: ${task.description}
+⚡ Öncelik: ${task.priority}
+📅 Bitiş Tarihi: ${this.formatDate(task.dueDate)}
+👤 Atanan: ${task.assignee}
+    `;
+    alert(taskDetails);
   }
 }

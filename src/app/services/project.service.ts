@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Project, ProjectStatus, KanbanColumn, ProjectInvite, ProjectMember } from '../models/project.model';
+import { Project, ProjectStatus, KanbanColumn, ProjectInvite, ProjectMember, InviteStatus } from '../models/project.model';
 import { StorageService } from './storage.service';
 import { AuthService } from './auth.service';
 import { WorkspaceService } from './workspace.service';
@@ -18,7 +18,7 @@ export class ProjectService {
         private storage: StorageService,
         private auth: AuthService,
         private workspace: WorkspaceService
-    ) { 
+    ) {
         this.loadCurrentProject();
     }
 
@@ -44,15 +44,15 @@ export class ProjectService {
             }
 
             const projects = this.storage.get<Project[]>('projects') || [];
-            
+
             // Filter projects based on user access
-            const userProjects = projects.filter(p => 
-                p.ownerId === user.id || 
+            const userProjects = projects.filter(p =>
+                p.ownerId === user.id ||
                 p.leadId === user.id ||
                 (p.members && p.members.some(m => typeof m === 'string' ? m === user.id : m.id === user.id)) ||
                 (p.teamMembers && p.teamMembers.includes(user.id))
             );
-            
+
             observer.next(userProjects);
             observer.complete();
         });
@@ -127,7 +127,7 @@ export class ProjectService {
             };
 
             this.storage.set('projects', projects);
-            
+
             // Update current project if it's the one being updated
             if (this.currentProjectSubject.value?.id === projectId) {
                 this.currentProjectSubject.next(projects[projectIndex]);
@@ -175,9 +175,9 @@ export class ProjectService {
     }
 
     updateColumns(projectId: string, columns: KanbanColumn[]): Observable<boolean> {
-        return this.updateProject(projectId, { 
+        return this.updateProject(projectId, {
             columns: columns,
-            kanbanColumns: columns 
+            kanbanColumns: columns
         }).pipe(
             map(() => true)
         );
@@ -188,7 +188,7 @@ export class ProjectService {
         return new Observable(observer => {
             const projects = this.storage.get<Project[]>('projects') || [];
             const project = projects.find(p => p.id === projectId);
-            
+
             if (!project) {
                 observer.error('Project not found');
                 return;
@@ -198,11 +198,11 @@ export class ProjectService {
             if (!project.members) {
                 project.members = [];
             }
-            
-            const existingMember = project.members.find(m => 
+
+            const existingMember = project.members.find(m =>
                 typeof m === 'string' ? m === userId : m.id === userId
             );
-            
+
             if (!existingMember) {
                 const user = this.auth.getUserById(userId);
                 if (user) {
@@ -219,7 +219,7 @@ export class ProjectService {
             if (!project.teamMembers) {
                 project.teamMembers = [];
             }
-            
+
             if (!project.teamMembers.includes(userId)) {
                 project.teamMembers.push(userId);
             }
@@ -234,7 +234,7 @@ export class ProjectService {
         return new Observable(observer => {
             const projects = this.storage.get<Project[]>('projects') || [];
             const project = projects.find(p => p.id === projectId);
-            
+
             if (!project) {
                 observer.error('Project not found');
                 return;
@@ -242,7 +242,7 @@ export class ProjectService {
 
             // Remove from members array
             if (project.members) {
-                project.members = project.members.filter(m => 
+                project.members = project.members.filter(m =>
                     typeof m === 'string' ? m !== userId : m.id !== userId
                 );
             }
@@ -274,7 +274,7 @@ export class ProjectService {
                 role,
                 invitedBy: user.id,
                 invitedAt: new Date(),
-                status: 'pending',
+                status: InviteStatus.PENDING,
                 token: this.storage.generateId()
             };
 
@@ -287,6 +287,7 @@ export class ProjectService {
         });
     }
 
+
     getInvitesForEmail(email: string): Observable<ProjectInvite[]> {
         return new Observable(observer => {
             const invites = this.storage.get<ProjectInvite[]>('projectInvites') || [];
@@ -295,20 +296,20 @@ export class ProjectService {
         });
     }
 
+
     acceptInvite(token: string, userId: string): Observable<boolean> {
         return new Observable(observer => {
             const invites = this.storage.get<ProjectInvite[]>('projectInvites') || [];
-            const invite = invites.find(i => i.token === token && i.status === 'pending');
-            
+            const invite = invites.find(i => i.token === token && i.status === InviteStatus.PENDING);
+
             if (!invite) {
-                observer.error('Invite not found');
+                observer.error('Invite not found or already handled');
                 return;
             }
-            
-            invite.status = 'accepted';
+
+            invite.status = InviteStatus.ACCEPTED;
             this.storage.set('projectInvites', invites);
 
-            // Add user to project
             this.addMember(invite.projectId, userId).subscribe({
                 next: () => {
                     observer.next(true);
@@ -319,22 +320,25 @@ export class ProjectService {
         });
     }
 
+
     declineInvite(token: string): Observable<boolean> {
         return new Observable(observer => {
             const invites = this.storage.get<ProjectInvite[]>('projectInvites') || [];
-            const invite = invites.find(i => i.token === token && i.status === 'pending');
-            
+            const invite = invites.find(i => i.token === token && i.status === InviteStatus.PENDING);
+
             if (!invite) {
-                observer.error('Invite not found');
+                observer.error('Invite not found or already handled');
                 return;
             }
-            
-            invite.status = 'declined';
+
+            invite.status = InviteStatus.DECLINED;
             this.storage.set('projectInvites', invites);
+
             observer.next(true);
             observer.complete();
         });
     }
+
 
     private getDefaultColumns(): KanbanColumn[] {
         return [

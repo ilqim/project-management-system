@@ -2,7 +2,7 @@ export interface Project {
   id: string;
   name: string;
   description?: string;
-  status: 'active' | 'completed' | 'paused';
+  status: 'active' | 'completed' | 'paused' | 'planning' | 'cancelled';
   progress?: number;
   taskCount?: number;
   memberCount?: number;
@@ -56,7 +56,7 @@ export interface ProjectInvite {
   role: string;
   invitedBy: string;
   invitedAt: Date;
-  status: 'active' | 'completed' | 'paused' | 'planning' | 'cancelled';
+  status: InviteStatus;
   token: string;
 }
 
@@ -66,4 +66,10 @@ export enum ProjectStatus {
   PAUSED = 'paused',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled'
+}
+
+export enum InviteStatus {
+  PENDING = 'pending',
+  ACCEPTED = 'accepted',
+  DECLINED = 'declined',
 }
