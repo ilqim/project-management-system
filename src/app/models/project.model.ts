@@ -56,7 +56,7 @@ export interface ProjectInvite {
   role: string;
   invitedBy: string;
   invitedAt: Date;
-  status: 'pending' | 'accepted' | 'declined';
+  status: 'active' | 'completed' | 'paused' | 'planning' | 'cancelled';
   token: string;
 }
 

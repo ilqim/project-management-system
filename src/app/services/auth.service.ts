@@ -130,6 +130,16 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  getUserById(id: string): User | undefined {
+    const demo = this.demoUsers.find(u => u.id === id);
+    if (demo) {
+      return demo;
+    }
+    const users = this.storage.get<User[]>('users') || [];
+    return users.find(u => u.id === id);
+  }
+
+
   hasRole(role: UserRole): boolean {
     const user = this.getCurrentUser();
     return user?.role === role;

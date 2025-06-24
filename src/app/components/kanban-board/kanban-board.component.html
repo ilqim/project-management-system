@@ -1,7 +1,7 @@
 <div class="kanban-board">
   <div class="column" *ngFor="let col of columns">
     <h3>{{ col.name }}</h3>
-    <div class="task" *ngFor="let task of tasksInColumn(col.id)">
+    <div class="task" *ngFor="let task of getTasksForColumn(col.id)">
       {{ task.title }}
     </div>
   </div>

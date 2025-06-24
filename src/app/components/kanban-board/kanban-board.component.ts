@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-kanban-board',
   templateUrl: './kanban-board.component.html',
-  styleUrls: ['./kanban-board.component.css']
+  styleUrls: ['./kanban-board.component.scss']
 })
 export class KanbanBoardComponent implements OnInit, OnDestroy {
   project: Project | null = null;
@@ -55,7 +55,7 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
     const currentProject = this.projectService.getCurrentProject();
     if (currentProject && currentProject.id === projectId) {
       this.project = currentProject;
-      this.columns = currentProject.kanbanColumns;
+      this.columns = currentProject.kanbanColumns || [];
       this.loadTasks(projectId);
     } else {
       // If not current project, load it
@@ -64,8 +64,8 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
           const project = projects.find(p => p.id === projectId);
           if (project) {
             this.project = project;
-            this.columns = project.kanbanColumns;
-            this.projectService.setCurrentProject(project);
+            this.columns = project.kanbanColumns || [];
+            this.projectService.setCurrentProject(project.id);
             this.loadTasks(projectId);
           } else {
             this.error = 'Project not found';
@@ -114,7 +114,7 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
       const currentCount = this.getTasksForColumn(columnId).length;
       if (currentCount >= column.wipLimit) {
         this.notification.addNotification(
-          `Cannot move task: ${column.title} is at WIP limit (${column.wipLimit})`,
+          `Cannot move task: ${column.name} is at WIP limit (${column.wipLimit})`,
           'warning'
         );
         return;
@@ -129,7 +129,7 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
           this.tasks[taskIndex] = updatedTask;
         }
         this.notification.addNotification(
-          `Task moved to ${column?.title || columnId}`,
+          `Task moved to ${column?.name || columnId}`,
           'success'
         );
       },

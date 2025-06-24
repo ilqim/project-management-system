@@ -14,7 +14,7 @@ interface ProjectForm {
 @Component({
   selector: 'app-project-list',
   templateUrl: './project-list.component.html',
-  styleUrls: ['./project-list.component.css'] // Change to .css
+  styleUrls: ['./project-list.component.scss']
 })
 export class ProjectListComponent implements OnInit {
   projects: Project[] = [];
@@ -179,9 +179,11 @@ export class ProjectListComponent implements OnInit {
   // Check if user can edit project
   canEditProject(project: Project): boolean {
     if (!this.currentUser) return false;
-    return this.currentUser.id === project.ownerId || 
-           this.currentUser.id === project.leadId ||
-           (project.teamMembers && project.teamMembers.includes(this.currentUser.id));
+    return (
+      this.currentUser.id === project.ownerId ||
+      this.currentUser.id === project.leadId ||
+      (project.teamMembers ? project.teamMembers.includes(this.currentUser.id) : false)
+    );
   }
 
   // Check if project is overdue

@@ -344,4 +344,4 @@ export class ProjectService {
             { id: 'done', name: 'Done', order: 3, color: '#10b981' }
         ];
     }
-}s
+}
