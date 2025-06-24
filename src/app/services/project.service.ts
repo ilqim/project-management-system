@@ -67,7 +67,7 @@ export class ProjectService {
         });
     }
 
-    createProject(projectData: Partial<Project>): Observable<Project> {
+    createProject(name: string, description: string, projectData: Partial<Project>): Observable<Project> {
         return new Observable(observer => {
             const user = this.auth.getCurrentUser();
             if (!user) {

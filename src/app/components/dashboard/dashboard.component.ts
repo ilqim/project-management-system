@@ -138,24 +138,10 @@ export class DashboardComponent implements OnInit {
   }
 
   inviteTeamMember(): void {
-    console.log('Inviting team member...');
-    // Modal veya basit prompt kullanarak takım üyesi davet et
-    const email = prompt('Davet edilecek takım üyesinin email adresini girin:');
-    if (email && this.isValidEmail(email)) {
-      // Burada normalde API çağrısı yapılır
-      alert(`${email} adresine davet gönderildi!`);
-      console.log('Invitation sent to:', email);
-      
-      // Aktivite listesine ekle
-      this.recentActivities.unshift({
-        id: Date.now().toString(),
-        text: `Takım daveti gönderildi: ${email}`,
-        time: 'Şimdi',
-        iconClass: 'fas fa-envelope text-info'
-      });
-    } else if (email) {
-      alert('Geçerli bir email adresi girin.');
-    }
+    this.router.navigate(['/team/invite']).catch(error => {
+      console.warn('Route not found:', error);
+      alert('Takım davet etme sayfası henüz hazır değil.');
+    });
   }
 
   viewReports(): void {

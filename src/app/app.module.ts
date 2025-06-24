@@ -16,6 +16,10 @@ import { TaskDetailComponent } from './components/task-detail/task-detail.compon
 import { TimeAgoPipe } from './pipes/time-ago.pipe';
 import { DurationPipe } from './pipes/duration.pipe';
 import { AuthGuard } from './guards/auth.guard';
+import { NewProjectComponent } from './components/new-project/new-project.component';
+import { NewTaskComponent } from './components/new-task/new-task.component';
+import { InviteTeamComponent } from './components/invite-team/invite-team.component';
+import { ReportsComponent } from './components/reports/reports.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +33,10 @@ import { AuthGuard } from './guards/auth.guard';
     SearchComponent,
     TaskCardComponent,
     TaskDetailComponent,
+    NewProjectComponent,
+    NewTaskComponent,
+    InviteTeamComponent,
+    ReportsComponent,
     TimeAgoPipe,
     DurationPipe
   ],
