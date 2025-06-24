@@ -4,6 +4,7 @@ import { Project, ProjectStatus, KanbanColumn, ProjectInvite } from '../models/p
 import { StorageService } from './storage.service';
 import { AuthService } from './auth.service';
 import { WorkspaceService } from './workspace.service';
+import { UserRole } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
