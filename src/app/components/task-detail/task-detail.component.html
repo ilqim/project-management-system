@@ -1,0 +1,7 @@
+<div *ngIf="task" class="task-detail">
+  <h2>{{ task.title }}</h2>
+  <p>{{ task.description }}</p>
+  <p><strong>Priority:</strong> {{ task.priority }}</p>
+  <p><strong>Progress:</strong> {{ task.progress }}%</p>
+  <p *ngIf="task.dueDate"><strong>Due:</strong> {{ task.dueDate | date }}</p>
+</div>

@@ -1,0 +1,22 @@
+.task-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.title {
+  font-weight: bold;
+}
+.meta {
+  font-size: 0.8rem;
+  color: #666;
+}
+.progress {
+  background: #eee;
+  height: 4px;
+  margin-top: 0.25rem;
+}
+.bar {
+  background: #3b82f6;
+  height: 100%;
+}

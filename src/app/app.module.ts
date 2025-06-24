@@ -10,6 +10,12 @@ import { ProjectListComponent } from './components/project-list/project-list.com
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { KanbanBoardComponent } from './components/kanban-board/kanban-board.component';
 import { HeaderComponent } from './components/header/header.component';
+import { SearchComponent } from './components/search/search.component';
+import { TaskCardComponent } from './components/task-card/task-card.component';
+import { TaskDetailComponent } from './components/task-detail/task-detail.component';
+import { TimeAgoPipe } from './pipes/time-ago.pipe';
+import { DurationPipe } from './pipes/duration.pipe';
+import { AuthGuard } from './guards/auth.guard';
 
 @NgModule({
   declarations: [
@@ -19,14 +25,19 @@ import { HeaderComponent } from './components/header/header.component';
     ProjectListComponent,
     DashboardComponent,
     KanbanBoardComponent,
-    HeaderComponent
+    HeaderComponent,
+    SearchComponent,
+    TaskCardComponent,
+    TaskDetailComponent,
+    TimeAgoPipe,
+    DurationPipe
   ],
   imports: [
     BrowserModule,
     FormsModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

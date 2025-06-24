@@ -1,0 +1,10 @@
+<div class="task-card">
+  <div class="title">{{ task.title }}</div>
+  <div class="meta">
+    <span>{{ task.priority }}</span>
+    <span *ngIf="task.dueDate">{{ task.dueDate | date:'shortDate' }}</span>
+  </div>
+  <div class="progress">
+    <div class="bar" [style.width.%]="task.progress"></div>
+  </div>
+</div>

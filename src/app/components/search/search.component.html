@@ -1,0 +1,14 @@
+<div class="search" [class.open]="isOpen">
+  <button class="toggle" (click)="toggle()">🔍</button>
+  <div class="panel" *ngIf="isOpen">
+    <input
+      type="text"
+      placeholder="Search tasks..."
+      [(ngModel)]="query"
+      (input)="search()"
+    />
+    <ul class="results">
+      <li *ngFor="let task of results">{{ task.title }}</li>
+    </ul>
+  </div>
+</div>
