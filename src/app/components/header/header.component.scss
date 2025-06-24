@@ -1,0 +1,29 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: #3f51b5;
+  color: #fff;
+}
+
+.app-name {
+  font-weight: bold;
+  margin-right: 20px;
+}
+
+.workspace-name {
+  font-style: italic;
+}
+
+.spacer {
+  flex: 1;
+}
+
+button {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  margin-left: 10px;
+  font-size: 1.2rem;
+}

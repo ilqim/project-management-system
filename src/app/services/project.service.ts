@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Project, ProjectStatus, KanbanColumn, ProjectInvite } from '../models/project.model';
 import { StorageService } from './storage.service';
 import { AuthService } from './auth.service';

@@ -1,0 +1,10 @@
+<header class="app-header">
+  <div class="app-name">ProjectFlow</div>
+  <div class="workspace-name" *ngIf="workspace">{{ workspace.name }}</div>
+  <span class="spacer"></span>
+  <button class="theme-toggle" (click)="toggleTheme()">
+    {{ theme === 'light' ? '🌙' : '☀️' }}
+  </button>
+  <span class="user-name" *ngIf="user">{{ user.name }}</span>
+  <button class="logout" *ngIf="user" (click)="logout()">Logout</button>
+</header>
