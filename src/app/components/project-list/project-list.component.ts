@@ -1,12 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
+import { AuthService } from '../../services/auth.service';
 import { Project } from '../../models/project.model';
+
+interface ProjectForm {
+  name: string;
+  description: string;
+  startDate: Date;
+  endDate?: Date;
+}
 
 @Component({
   selector: 'app-project-list',
   templateUrl: './project-list.component.html',
-  styleUrls: ['./project-list.component.scss']
+  styleUrls: ['./project-list.component.css'] // Change to .css
 })
 export class ProjectListComponent implements OnInit {
   projects: Project[] = [];
@@ -14,30 +22,44 @@ export class ProjectListComponent implements OnInit {
   searchTerm = '';
   selectedStatus = '';
   viewMode: 'grid' | 'list' = 'grid';
-  isLoading = false;
+  loading = false; // Changed from isLoading
   
   // Pagination
   currentPage = 1;
   itemsPerPage = 12;
   totalPages = 1;
 
-  constructor(private projectService: ProjectService, private router: Router) {}
+  // Add missing properties
+  projectForm: ProjectForm = {
+    name: '',
+    description: '',
+    startDate: new Date()
+  };
+
+  currentUser: any = null;
+
+  constructor(
+    private projectService: ProjectService,
+    private router: Router,
+    private authService: AuthService // Add AuthService
+  ) {}
 
   ngOnInit(): void {
+    this.currentUser = this.authService.getCurrentUser();
     this.loadProjects();
   }
 
   loadProjects(): void {
-    this.isLoading = true;
+    this.loading = true; // Use loading instead of isLoading
     this.projectService.getProjects().subscribe({
       next: (projects) => {
         this.projects = projects;
         this.applyFilters();
-        this.isLoading = false;
+        this.loading = false;
       },
       error: (error) => {
         console.error('Projeler yüklenirken hata oluştu:', error);
-        this.isLoading = false;
+        this.loading = false;
       }
     });
   }
@@ -83,8 +105,14 @@ export class ProjectListComponent implements OnInit {
     this.viewMode = mode;
   }
 
+  // Fixed method name
   createNewProject(): void {
     this.router.navigate(['/projects/new']);
+  }
+
+  // Alternative method for compatibility
+  createProject(): void {
+    this.createNewProject();
   }
 
   openProject(project: Project): void {
@@ -92,13 +120,19 @@ export class ProjectListComponent implements OnInit {
     this.router.navigate(['/dashboard']);
   }
 
-  editProject(project: Project, event: Event): void {
-    event.stopPropagation();
+  // Fix method signature to match template
+  editProject(project: Project, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
     this.router.navigate(['/projects/edit', project.id]);
   }
 
-  deleteProject(project: Project, event: Event): void {
-    event.stopPropagation();
+  // Fix method signature to match template
+  deleteProject(project: Project, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
     
     if (confirm(`"${project.name}" projesini silmek istediğinizden emin misiniz?`)) {
       this.projectService.deleteProject(project.id).subscribe({
@@ -118,7 +152,9 @@ export class ProjectListComponent implements OnInit {
     const statusMap: { [key: string]: string } = {
       'active': 'Aktif',
       'completed': 'Tamamlandı',
-      'paused': 'Durdurulmuş'
+      'paused': 'Durdurulmuş',
+      'planning': 'Planlama',
+      'cancelled': 'İptal Edilmiş'
     };
     return statusMap[status] || status;
   }
@@ -129,7 +165,7 @@ export class ProjectListComponent implements OnInit {
     return 'high';
   }
 
-  isOverdue(dueDate: string | Date): boolean {
+  isOverdue(dueDate: string | Date | undefined): boolean {
     if (!dueDate) return false;
     const due = new Date(dueDate);
     const now = new Date();
@@ -138,6 +174,26 @@ export class ProjectListComponent implements OnInit {
 
   trackByProjectId(index: number, project: Project): any {
     return project.id;
+  }
+
+  // Check if user can edit project
+  canEditProject(project: Project): boolean {
+    if (!this.currentUser) return false;
+    return this.currentUser.id === project.ownerId || 
+           this.currentUser.id === project.leadId ||
+           (project.teamMembers && project.teamMembers.includes(this.currentUser.id));
+  }
+
+  // Check if project is overdue
+  isProjectOverdue(project: Project): boolean {
+    const now = new Date();
+    if (project.endDate && new Date(project.endDate) < now && project.status !== 'completed') {
+      return true;
+    }
+    if (project.startDate && new Date(project.startDate) <= now && project.status === 'planning') {
+      return true;
+    }
+    return false;
   }
 
   // Pagination methods
@@ -170,5 +226,10 @@ export class ProjectListComponent implements OnInit {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     return this.filteredProjects.slice(startIndex, endIndex);
+  }
+
+  // Property alias for template compatibility
+  get isLoading(): boolean {
+    return this.loading;
   }
 }
