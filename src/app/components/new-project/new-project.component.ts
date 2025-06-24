@@ -17,9 +17,14 @@ export class NewProjectComponent {
     if (!this.name.trim()) {
       return;
     }
-    this.projectService.createProject(this.name, this.description).subscribe(() => {
-      this.router.navigate(['/projects']);
-    });
+    this.projectService
+      .createProject(this.name, this.description, {
+        name: this.name,
+        description: this.description,
+      })
+      .subscribe(() => {
+        this.router.navigate(['/projects']);
+      });
   }
 
   cancel(): void {
