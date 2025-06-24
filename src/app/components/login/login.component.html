@@ -1,0 +1,67 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>ProjectFlow</h1>
+      <p>Manage your projects with ease</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+          required
+          placeholder="Enter your email"
+          [disabled]="isLoading"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+          placeholder="Enter your password"
+          [disabled]="isLoading"
+        />
+      </div>
+
+      <div class="error-message" *ngIf="error">
+        {{ error }}
+      </div>
+
+      <button type="submit" class="login-btn" [disabled]="isLoading">
+        <span *ngIf="isLoading">Logging in...</span>
+        <span *ngIf="!isLoading">Login</span>
+      </button>
+
+      <button type="button" class="demo-btn" (click)="loginAsDemo()" [disabled]="isLoading">
+        Try Demo
+      </button>
+    </form>
+
+    <div class="login-features">
+      <div class="feature">
+        <div class="feature-icon">🏢</div>
+        <h3>Multi-Workspace</h3>
+        <p>Organize teams and projects in separate workspaces</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <h3>Advanced Analytics</h3>
+        <p>Track progress with detailed metrics and reports</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚡</div>
+        <h3>Real-time Updates</h3>
+        <p>Stay synchronized with your team instantly</p>
+      </div>
+    </div>
+  </div>
+</div>
