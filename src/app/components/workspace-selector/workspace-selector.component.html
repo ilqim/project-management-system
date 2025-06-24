@@ -1,0 +1,15 @@
+<div class="workspace-selector">
+  <h2>Select Workspace</h2>
+  <ul>
+    <li *ngFor="let ws of workspaces" class="workspace-item">
+      <button (click)="selectWorkspace(ws.id)">{{ ws.name }}</button>
+    </li>
+  </ul>
+
+  <h3>Create Workspace</h3>
+  <form (ngSubmit)="createWorkspace()">
+    <input type="text" name="name" [(ngModel)]="newName" placeholder="Name" required />
+    <input type="text" name="description" [(ngModel)]="newDescription" placeholder="Description" />
+    <button type="submit">Create</button>
+  </form>
+</div>

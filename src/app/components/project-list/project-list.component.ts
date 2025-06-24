@@ -10,6 +10,8 @@ import { Project } from '../../models/project.model';
 })
 export class ProjectListComponent implements OnInit {
   projects: Project[] = [];
+  newName = '';
+  newDescription = '';
 
   constructor(private projectService: ProjectService, private router: Router) {}
 
@@ -24,5 +26,18 @@ export class ProjectListComponent implements OnInit {
   open(project: Project): void {
     this.projectService.setCurrentProject(project.id);
     this.router.navigate(['/dashboard']);
+  }
+  
+  createProject(): void {
+    if (!this.newName.trim()) {
+      return;
+    }
+    this.projectService
+      .createProject(this.newName, this.newDescription)
+      .subscribe(p => {
+        this.projects.push(p);
+        this.newName = '';
+        this.newDescription = '';
+      });
   }
 }

@@ -25,7 +25,7 @@
               <i class="fas fa-folder"></i>
             </div>
             <div class="stat-content">
-              <h3 class="stat-number">12</h3>
+              <h3 class="stat-number">{{ statsData.activeProjects }}</h3>
               <p class="stat-label">Aktif Projeler</p>
             </div>
           </div>
@@ -35,7 +35,7 @@
               <i class="fas fa-tasks"></i>
             </div>
             <div class="stat-content">
-              <h3 class="stat-number">48</h3>
+              <h3 class="stat-number">{{ statsData.openTasks }}</h3>
               <p class="stat-label">Açık Görevler</p>
             </div>
           </div>
@@ -45,7 +45,7 @@
               <i class="fas fa-check-circle"></i>
             </div>
             <div class="stat-content">
-              <h3 class="stat-number">156</h3>
+              <h3 class="stat-number">{{ statsData.completedTasks }}</h3>
               <p class="stat-label">Tamamlanan</p>
             </div>
           </div>
@@ -55,7 +55,7 @@
               <i class="fas fa-users"></i>
             </div>
             <div class="stat-content">
-              <h3 class="stat-number">8</h3>
+              <h3 class="stat-number">{{ statsData.teamMembers }}</h3>
               <p class="stat-label">Takım Üyeleri</p>
             </div>
           </div>
@@ -66,44 +66,18 @@
       <section class="activity-section">
         <h2 class="section-title">Son Aktiviteler</h2>
         <div class="activity-list">
-          <div class="activity-item">
+          <div class="activity-item" *ngFor="let activity of recentActivities">
             <div class="activity-icon">
-              <i class="fas fa-plus text-success"></i>
+              <i [class]="activity.iconClass"></i>
             </div>
             <div class="activity-content">
-              <p class="activity-text">Yeni görev eklendi: "API entegrasyonu"</p>
-              <span class="activity-time">2 saat önce</span>
+              <p class="activity-text">{{ activity.text }}</p>
+              <span class="activity-time">{{ activity.time }}</span>
             </div>
           </div>
           
-          <div class="activity-item">
-            <div class="activity-icon">
-              <i class="fas fa-check text-success"></i>
-            </div>
-            <div class="activity-content">
-              <p class="activity-text">Görev tamamlandı: "Veritabanı tasarımı"</p>
-              <span class="activity-time">4 saat önce</span>
-            </div>
-          </div>
-          
-          <div class="activity-item">
-            <div class="activity-icon">
-              <i class="fas fa-user-plus text-info"></i>
-            </div>
-            <div class="activity-content">
-              <p class="activity-text">Yeni takım üyesi eklendi: Jane Smith</p>
-              <span class="activity-time">1 gün önce</span>
-            </div>
-          </div>
-          
-          <div class="activity-item">
-            <div class="activity-icon">
-              <i class="fas fa-folder text-primary"></i>
-            </div>
-            <div class="activity-content">
-              <p class="activity-text">Yeni proje oluşturuldu: "Mobile App"</p>
-              <span class="activity-time">2 gün önce</span>
-            </div>
+          <div class="no-activities" *ngIf="recentActivities.length === 0">
+            <p>Henüz aktivite bulunmamaktadır.</p>
           </div>
         </div>
       </section>
@@ -112,58 +86,28 @@
       <section class="upcoming-section">
         <h2 class="section-title">Yaklaşan Görevler</h2>
         <div class="task-list">
-          <div class="task-item priority-high">
+          <div class="task-item" 
+               *ngFor="let task of upcomingTasks" 
+               [ngClass]="'priority-' + task.priority.toLowerCase()">
             <div class="task-priority"></div>
             <div class="task-content">
-              <h4 class="task-title">Frontend geliştirme</h4>
-              <p class="task-description">Kullanıcı arayüzü tasarımı</p>
+              <h4 class="task-title">{{ task.title }}</h4>
+              <p class="task-description">{{ task.description }}</p>
               <div class="task-meta">
                 <span class="task-date">
                   <i class="fas fa-calendar"></i>
-                  Bugün
+                  {{ task.dueDate | date:'shortDate' }}
                 </span>
                 <span class="task-assignee">
                   <i class="fas fa-user"></i>
-                  John Doe
+                  {{ task.assignee }}
                 </span>
               </div>
             </div>
           </div>
           
-          <div class="task-item priority-medium">
-            <div class="task-priority"></div>
-            <div class="task-content">
-              <h4 class="task-title">Test yazma</h4>
-              <p class="task-description">Unit testlerin yazılması</p>
-              <div class="task-meta">
-                <span class="task-date">
-                  <i class="fas fa-calendar"></i>
-                  Yarın
-                </span>
-                <span class="task-assignee">
-                  <i class="fas fa-user"></i>
-                  Jane Smith
-                </span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="task-item priority-low">
-            <div class="task-priority"></div>
-            <div class="task-content">
-              <h4 class="task-title">Dokümantasyon</h4>
-              <p class="task-description">API dokümantasyonu güncelleme</p>
-              <div class="task-meta">
-                <span class="task-date">
-                  <i class="fas fa-calendar"></i>
-                  Bu hafta
-                </span>
-                <span class="task-assignee">
-                  <i class="fas fa-user"></i>
-                  Admin
-                </span>
-              </div>
-            </div>
+          <div class="no-tasks" *ngIf="upcomingTasks.length === 0">
+            <p>Yaklaşan görev bulunmamaktadır.</p>
           </div>
         </div>
       </section>
@@ -172,19 +116,19 @@
       <section class="quick-actions-section">
         <h2 class="section-title">Hızlı Aksiyonlar</h2>
         <div class="quick-actions">
-          <button class="action-btn primary">
+          <button class="action-btn primary" (click)="createNewProject()">
             <i class="fas fa-plus"></i>
             Yeni Proje
           </button>
-          <button class="action-btn secondary">
+          <button class="action-btn secondary" (click)="addNewTask()">
             <i class="fas fa-tasks"></i>
             Görev Ekle
           </button>
-          <button class="action-btn tertiary">
+          <button class="action-btn tertiary" (click)="inviteTeamMember()">
             <i class="fas fa-user-plus"></i>
             Takım Davet Et
           </button>
-          <button class="action-btn info">
+          <button class="action-btn info" (click)="viewReports()">
             <i class="fas fa-chart-bar"></i>
             Raporlar
           </button>

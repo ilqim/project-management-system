@@ -1,0 +1,187 @@
+<div class="project-list-container">
+  <header class="project-list-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="fas fa-folder-open"></i>
+        Projeler
+      </h1>
+      <button class="btn btn-primary" (click)="createNewProject()">
+        <i class="fas fa-plus"></i>
+        Yeni Proje
+      </button>
+    </div>
+  </header>
+
+  <main class="project-list-main">
+    <!-- Filtreler -->
+    <section class="filters-section">
+      <div class="filters-container">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input 
+            type="text" 
+            placeholder="Proje ara..." 
+            [(ngModel)]="searchTerm"
+            (input)="onSearchChange()"
+            class="search-input">
+        </div>
+        
+        <div class="filter-dropdown">
+          <select [(ngModel)]="selectedStatus" (change)="onStatusChange()" class="status-filter">
+            <option value="">Tüm Durumlar</option>
+            <option value="active">Aktif</option>
+            <option value="completed">Completed</option>
+            <option value="paused">Durdurulmuş</option>
+          </select>
+        </div>
+
+        <div class="view-toggle">
+          <button 
+            class="view-btn" 
+            [class.active]="viewMode === 'grid'"
+            (click)="setViewMode('grid')">
+            <i class="fas fa-th-large"></i>
+          </button>
+          <button 
+            class="view-btn" 
+            [class.active]="viewMode === 'list'"
+            (click)="setViewMode('list')">
+            <i class="fas fa-list"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Proje Listesi -->
+    <section class="projects-section">
+      <div class="projects-container" [class]="viewMode + '-view'">
+        
+        <!-- Loading State -->
+        <div class="loading-state" *ngIf="isLoading">
+          <div class="spinner"></div>
+          <p>Projeler yükleniyor...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="!isLoading && filteredProjects.length === 0">
+          <div class="empty-icon">
+            <i class="fas fa-folder-open"></i>
+          </div>
+          <h3>Henüz proje bulunmamaktadır</h3>
+          <p>İlk projenizi oluşturmak için "Yeni Proje" butonuna tıklayın.</p>
+          <button class="btn btn-primary" (click)="createNewProject()">
+            <i class="fas fa-plus"></i>
+            İlk Projeyi Oluştur
+          </button>
+        </div>
+
+        <!-- Project Cards -->
+        <div class="project-card" 
+             *ngFor="let project of filteredProjects; trackBy: trackByProjectId"
+             (click)="openProject(project)"
+             [class]="'status-' + project.status">
+          
+          <div class="project-header">
+            <div class="project-title">
+              <h3>{{ project.name }}</h3>
+              <span class="project-status" [class]="'status-' + project.status">
+                {{ getStatusText(project.status) }}
+              </span>
+            </div>
+            <div class="project-actions">
+              <button class="action-btn" 
+                      (click)="editProject(project, $event)"
+                      title="Düzenle">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="action-btn danger" 
+                      (click)="deleteProject(project, $event)"
+                      title="Sil">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="project-description">
+            <p>{{ project.description || 'Açıklama bulunmamaktadır.' }}</p>
+          </div>
+
+          <div class="project-stats">
+            <div class="stat-item">
+              <i class="fas fa-tasks"></i>
+              <span>{{ project.taskCount || 0 }} Görev</span>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-users"></i>
+              <span>{{ project.memberCount || 0 }} Üye</span>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-calendar"></i>
+              <span>{{ project.createdAt | date:'shortDate' }}</span>
+            </div>
+          </div>
+
+          <div class="project-progress">
+            <div class="progress-info">
+              <span class="progress-label">İlerleme</span>
+              <span class="progress-value">{{ project.progress || 0 }}%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" 
+                   [style.width.%]="project.progress || 0"
+                   [class]="getProgressClass(project.progress || 0)"></div>
+            </div>
+          </div>
+
+          <div class="project-footer">
+            <div class="project-team">
+              <div class="team-avatars">
+                <div class="avatar" 
+                     *ngFor="let member of project.members?.slice(0, 3); let i = index"
+                     [title]="member.name">
+                  <img [src]="member.avatar" [alt]="member.name" *ngIf="member.avatar">
+                  <i class="fas fa-user" *ngIf="!member.avatar"></i>
+                </div>
+                <div class="avatar more" 
+                     *ngIf="project.members && project.members.length > 3"
+                     [title]="'+' + (project.members.length - 3) + ' daha'">
+                  +{{ project.members.length - 3 }}
+                </div>
+              </div>
+            </div>
+            <div class="project-due-date" *ngIf="project.dueDate">
+              <i class="fas fa-clock"></i>
+              <span [class.overdue]="isOverdue(project.dueDate)">
+                {{ project.dueDate | date:'shortDate' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-container" *ngIf="totalPages > 1">
+        <nav class="pagination">
+          <button class="page-btn" 
+                  [disabled]="currentPage === 1"
+                  (click)="goToPage(currentPage - 1)">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          
+          <button class="page-btn" 
+                  *ngFor="let page of getPageNumbers()"
+                  [class.active]="page === currentPage"
+                  (click)="goToPage(page)">
+            {{ page }}
+          </button>
+          
+          <button class="page-btn" 
+                  [disabled]="currentPage === totalPages"
+                  (click)="goToPage(currentPage + 1)">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </nav>
+      </div>
+    </section>
+  </main>
+</div>
