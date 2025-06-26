@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TaskService } from '../../services/task.service';
 import { AuthService } from '../../services/auth.service';
-import { User } from '../../models/user.model';
+import { User, UserRole } from '../../models/user.model';
 
 @Component({
   selector: 'app-new-task',
@@ -16,6 +16,14 @@ export class NewTaskComponent implements OnInit {
   assigneeId: string | null = null;
   users: User[] = [];
   filteredUsers: User[] = [];
+  currentUser: User | null = null;
+  private roleHierarchy = [
+    UserRole.VIEWER,
+    UserRole.DEVELOPER,
+    UserRole.PROJECT_LEAD,
+    UserRole.ADMIN
+  ];
+
 
   constructor(
     private taskService: TaskService,
@@ -24,7 +32,10 @@ export class NewTaskComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.users = this.authService.getAllUsers();
+    this.currentUser = this.authService.getCurrentUser();
+    this.users = this.authService
+      .getAllUsers()
+      .filter(u => this.canAssignTo(u));
     this.filteredUsers = this.users.slice();
   }
 
@@ -34,6 +45,15 @@ export class NewTaskComponent implements OnInit {
       u.name.toLowerCase().includes(query) || u.email.toLowerCase().includes(query)
     );
   }
+  private roleRank(role: UserRole): number {
+    return this.roleHierarchy.indexOf(role);
+  }
+
+  private canAssignTo(user: User): boolean {
+    if (!this.currentUser) return false;
+    return this.roleRank(user.role) <= this.roleRank(this.currentUser.role);
+  }
+
 
   createTask(): void {
     if (!this.title.trim()) {

@@ -114,6 +114,13 @@ export class TaskService {
     });
   }
 
+  completeTask(taskId: string): Observable<Task> {
+    return this.updateTask(taskId, {
+      progress: 100,
+      completedAt: new Date()
+    });
+  }
+
   deleteTask(taskId: string): Observable<boolean> {
     return new Observable(observer => {
       const tasks = this.storage.get<Task[]>('tasks') || [];

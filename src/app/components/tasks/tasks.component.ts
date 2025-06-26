@@ -50,10 +50,7 @@ export class TasksComponent implements OnInit {
         this.filteredTasks = this.tasks;
         break;
       case UserRole.PROJECT_LEAD:
-        const leadProjects = this.projects
-          .filter(p => p.leadId === this.currentUser!.id)
-          .map(p => p.id);
-        this.filteredTasks = this.tasks.filter(t => leadProjects.includes(t.projectId));
+        this.filteredTasks = this.tasks.filter(t => t.reporterId === this.currentUser!.id);
         break;
       case UserRole.DEVELOPER:
         this.filteredTasks = this.tasks.filter(t => t.assigneeId === this.currentUser!.id);
@@ -61,6 +58,24 @@ export class TasksComponent implements OnInit {
       default:
         this.filteredTasks = [];
     }
+  }
+  getUserName(userId: string): string {
+    const user = this.authService.getUserById(userId);
+    return user ? user.name : userId;
+  }
+
+  canToggleComplete(task: Task): boolean {
+    return !!this.currentUser && task.assigneeId === this.currentUser.id && !task.completedAt;
+  }
+
+  toggleComplete(task: Task): void {
+    if (!this.canToggleComplete(task)) {
+      return;
+    }
+    this.taskService.completeTask(task.id).subscribe(updated => {
+      task.progress = updated.progress;
+      task.completedAt = updated.completedAt;
+    });
   }
 
   getProjectName(projectId: string): string {
