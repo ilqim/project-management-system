@@ -117,7 +117,7 @@ export class ProjectListComponent implements OnInit {
 
   openProject(project: Project): void {
     this.projectService.setCurrentProject(project.id);
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/projects', project.id]);
   }
 
   // Fix method signature to match template

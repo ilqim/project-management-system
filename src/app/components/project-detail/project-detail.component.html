@@ -1,0 +1,23 @@
+<div class="project-detail" *ngIf="project as p">
+  <header class="detail-header">
+    <button class="back-btn" (click)="goBack()">&larr; Geri</button>
+    <h2>{{ p.name }}</h2>
+  </header>
+
+  <section class="info" *ngIf="!loading">
+    <p class="description">{{ p.description }}</p>
+    <p><strong>Durum:</strong> {{ p.status }}</p>
+    <p><strong>Başlangıç:</strong> {{ p.startDate | date:'shortDate' }}</p>
+    <p *ngIf="p.endDate"><strong>Bitiş:</strong> {{ p.endDate | date:'shortDate' }}</p>
+    <p><strong>İlerleme:</strong> {{ p.progress || 0 }}%</p>
+
+    <div class="members" *ngIf="p.teamMembers?.length">
+      <h3>Takım Üyeleri</h3>
+      <ul>
+        <li *ngFor="let id of p.teamMembers">{{ getMemberName(id) }}</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="loading" *ngIf="loading">Projeler yükleniyor...</div>
+</div>

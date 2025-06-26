@@ -20,6 +20,7 @@ import { NewProjectComponent } from './components/new-project/new-project.compon
 import { NewTaskComponent } from './components/new-task/new-task.component';
 import { InviteTeamComponent } from './components/invite-team/invite-team.component';
 import { ReportsComponent } from './components/reports/reports.component';
+import { ProjectDetailComponent } from './components/project-detail/project-detail.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { ReportsComponent } from './components/reports/reports.component';
     SearchComponent,
     TaskCardComponent,
     TaskDetailComponent,
+    ProjectDetailComponent,
     NewProjectComponent,
     NewTaskComponent,
     InviteTeamComponent,
