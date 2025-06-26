@@ -1,4 +1,10 @@
 <div class="project-list-container">
+  <app-confirm-dialog
+    *ngIf="confirmVisible"
+    [message]="confirmMessage"
+    (confirmed)="confirmAction()"
+    (cancelled)="cancelDialog()">
+  </app-confirm-dialog>
   <header class="project-list-header">
     <div class="header-content">
       <h1 class="page-title">

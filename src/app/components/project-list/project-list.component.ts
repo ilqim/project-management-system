@@ -40,6 +40,11 @@ export class ProjectListComponent implements OnInit {
 
   currentUser: User | null = null;
   taskCounts: { [projectId: string]: number } = {};
+  confirmVisible = false;
+  confirmMessage = '';
+  action: 'cancel' | 'delete' | null = null;
+  selectedProject: Project | null = null;
+  UserRole = UserRole;
 
   constructor(
     private projectService: ProjectService,
@@ -90,10 +95,10 @@ export class ProjectListComponent implements OnInit {
     if (event) {
       event.stopPropagation();
     }
-    this.projectService.cancelProject(project.id).subscribe(updated => {
-      project.status = updated.status;
-      this.applyFilters();
-    });
+    this.selectedProject = project;
+    this.action = 'cancel';
+    this.confirmMessage = `"${project.name}" projesini iptal etmek istediğinizden emin misiniz?`;
+    this.confirmVisible = true;
   }
 
   finishProject(project: Project, event?: Event): void {
@@ -108,10 +113,12 @@ export class ProjectListComponent implements OnInit {
 
   canCancelProject(project: Project): boolean {
     if (!this.currentUser) return false;
-    const owner = this.authService.getUserById(project.ownerId || '');
+    if (this.currentUser.role === UserRole.ADMIN) {
+      return project.status === 'active';
+    }
     return (
-      [UserRole.ADMIN, UserRole.PROJECT_LEAD].includes(this.currentUser.role) &&
-      owner?.role === UserRole.PROJECT_LEAD &&
+      this.currentUser.role === UserRole.PROJECT_LEAD &&
+      project.ownerId === this.currentUser.id &&
       project.status === 'active'
     );
   }
@@ -199,19 +206,10 @@ export class ProjectListComponent implements OnInit {
     if (event) {
       event.stopPropagation();
     }
-    
-    if (confirm(`"${project.name}" projesini silmek istediğinizden emin misiniz?`)) {
-      this.projectService.deleteProject(project.id).subscribe({
-        next: () => {
-          this.projects = this.projects.filter(p => p.id !== project.id);
-          this.applyFilters();
-        },
-        error: (error) => {
-          console.error('Proje silinirken hata oluştu:', error);
-          alert('Proje silinirken bir hata oluştu.');
-        }
-      });
-    }
+    this.selectedProject = project;
+    this.action = 'delete';
+    this.confirmMessage = `"${project.name}" projesini silmek istediğinizden emin misiniz?`;
+    this.confirmVisible = true;
   }
 
   canCreateProject(): boolean {
@@ -229,6 +227,45 @@ export class ProjectListComponent implements OnInit {
       'cancelled': 'İptal Edilmiş'
     };
     return statusMap[status] || status;
+  }
+
+  
+  confirmAction(): void {
+    if (!this.selectedProject || !this.action) {
+      this.resetDialog();
+      return;
+    }
+    if (this.action === 'cancel') {
+      this.projectService.cancelProject(this.selectedProject.id).subscribe(updated => {
+        this.selectedProject!.status = updated.status;
+        this.applyFilters();
+        this.resetDialog();
+      });
+    } else if (this.action === 'delete') {
+      this.projectService.deleteProject(this.selectedProject.id).subscribe({
+        next: () => {
+          this.projects = this.projects.filter(p => p.id !== this.selectedProject!.id);
+          this.applyFilters();
+          this.resetDialog();
+        },
+        error: error => {
+          console.error('Proje silinirken hata oluştu:', error);
+          alert('Proje silinirken bir hata oluştu.');
+          this.resetDialog();
+        }
+      });
+    }
+  }
+
+  cancelDialog(): void {
+    this.resetDialog();
+  }
+
+  private resetDialog(): void {
+    this.confirmVisible = false;
+    this.selectedProject = null;
+    this.action = null;
+    this.confirmMessage = '';
   }
 
   getProgressClass(progress: number): string {

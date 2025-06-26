@@ -23,6 +23,7 @@ import { ReportsComponent } from './components/reports/reports.component';
 import { ProjectDetailComponent } from './components/project-detail/project-detail.component';
 import { RoleGuard } from './guards/role.guard';
 import { TasksComponent } from './components/tasks/tasks.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { TeamManagementComponent } from './components/team-management/team-management.component';
 
 @NgModule({
@@ -35,6 +36,7 @@ import { TeamManagementComponent } from './components/team-management/team-manag
     KanbanBoardComponent,
     HeaderComponent,
     SearchComponent,
+    ConfirmDialogComponent,
     TaskCardComponent,
     TaskDetailComponent,
     ProjectDetailComponent,
