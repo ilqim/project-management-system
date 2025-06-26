@@ -24,7 +24,7 @@ export class ProjectListComponent implements OnInit {
   searchTerm = '';
   selectedStatus = '';
   viewMode: 'grid' | 'list' = 'grid';
-  loading = false; // Changed from isLoading
+  loading = false;
   
   // Pagination
   currentPage = 1;
@@ -42,14 +42,14 @@ export class ProjectListComponent implements OnInit {
   taskCounts: { [projectId: string]: number } = {};
   confirmVisible = false;
   confirmMessage = '';
-  action: 'cancel' | 'delete' | null = null;
+  action: 'cancel' | null = null; // Sadece cancel aksiyonu kalacak
   selectedProject: Project | null = null;
   UserRole = UserRole;
 
   constructor(
     private projectService: ProjectService,
     private router: Router,
-    private authService: AuthService, // Add AuthService
+    private authService: AuthService,
     private taskService: TaskService
   ) {}
 
@@ -59,7 +59,7 @@ export class ProjectListComponent implements OnInit {
   }
 
   loadProjects(): void {
-    this.loading = true; // Use loading instead of isLoading
+    this.loading = true;
     this.taskService.getTasks().subscribe(tasks => {
       const counts: { [pid: string]: number } = {};
       tasks.forEach(t => {
@@ -101,39 +101,36 @@ export class ProjectListComponent implements OnInit {
     this.confirmVisible = true;
   }
 
-  finishProject(project: Project, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-    this.projectService.completeProject(project.id).subscribe(updated => {
-      project.status = updated.status;
-      this.applyFilters();
-    });
-  }
-
+  // İptal etme yetkisi kontrolü
   canCancelProject(project: Project): boolean {
     if (!this.currentUser) return false;
+    
+    // Admin tüm projeleri iptal edebilir
     if (this.currentUser.role === UserRole.ADMIN) {
-      return project.status === 'active';
+      return project.status === 'active' || project.status === 'planning';
     }
+    
+    // Project Lead sadece kendi oluşturduğu projeleri iptal edebilir
     return (
       this.currentUser.role === UserRole.PROJECT_LEAD &&
       project.ownerId === this.currentUser.id &&
-      project.status === 'active'
+      (project.status === 'active' || project.status === 'planning')
     );
   }
 
-  canCompleteProject(project: Project): boolean {
+  // Düzenleme yetkisi kontrolü
+  canEditProject(project: Project): boolean {
     if (!this.currentUser) return false;
+    
+    // Admin tüm projeleri düzenleyebilir
     if (this.currentUser.role === UserRole.ADMIN) {
-      return project.status !== 'completed' && project.status !== 'cancelled';
+      return true;
     }
-    const owner = this.authService.getUserById(project.ownerId || '');
+    
+    // Project Lead sadece kendi oluşturduğu projeleri düzenleyebilir
     return (
       this.currentUser.role === UserRole.PROJECT_LEAD &&
-      owner?.id === this.currentUser.id &&
-      project.status !== 'completed' &&
-      project.status !== 'cancelled'
+      project.ownerId === this.currentUser.id
     );
   }
 
@@ -178,12 +175,10 @@ export class ProjectListComponent implements OnInit {
     this.viewMode = mode;
   }
 
-  // Fixed method name
   createNewProject(): void {
     this.router.navigate(['/projects/new']);
   }
 
-  // Alternative method for compatibility
   createProject(): void {
     this.createNewProject();
   }
@@ -193,7 +188,6 @@ export class ProjectListComponent implements OnInit {
     this.router.navigate(['/projects', project.id]);
   }
 
-  // Fix method signature to match template
   editProject(project: Project, event?: Event): void {
     if (event) {
       event.stopPropagation();
@@ -201,22 +195,10 @@ export class ProjectListComponent implements OnInit {
     this.router.navigate(['/projects/edit', project.id]);
   }
 
-  // Fix method signature to match template
-  deleteProject(project: Project, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-    this.selectedProject = project;
-    this.action = 'delete';
-    this.confirmMessage = `"${project.name}" projesini silmek istediğinizden emin misiniz?`;
-    this.confirmVisible = true;
-  }
-
   canCreateProject(): boolean {
     if (!this.currentUser) return false;
     return [UserRole.ADMIN, UserRole.PROJECT_LEAD].includes(this.currentUser.role);
   }
-
 
   getStatusText(status: string): string {
     const statusMap: { [key: string]: string } = {
@@ -229,28 +211,22 @@ export class ProjectListComponent implements OnInit {
     return statusMap[status] || status;
   }
 
-  
   confirmAction(): void {
     if (!this.selectedProject || !this.action) {
       this.resetDialog();
       return;
     }
+    
     if (this.action === 'cancel') {
-      this.projectService.cancelProject(this.selectedProject.id).subscribe(updated => {
-        this.selectedProject!.status = updated.status;
-        this.applyFilters();
-        this.resetDialog();
-      });
-    } else if (this.action === 'delete') {
-      this.projectService.deleteProject(this.selectedProject.id).subscribe({
-        next: () => {
-          this.projects = this.projects.filter(p => p.id !== this.selectedProject!.id);
+      this.projectService.cancelProject(this.selectedProject.id).subscribe({
+        next: (updated) => {
+          this.selectedProject!.status = updated.status;
           this.applyFilters();
           this.resetDialog();
         },
-        error: error => {
-          console.error('Proje silinirken hata oluştu:', error);
-          alert('Proje silinirken bir hata oluştu.');
+        error: (error) => {
+          console.error('Proje iptal edilirken hata oluştu:', error);
+          alert('Proje iptal edilirken bir hata oluştu.');
           this.resetDialog();
         }
       });
@@ -291,17 +267,6 @@ export class ProjectListComponent implements OnInit {
     return project.id;
   }
 
-  // Check if user can edit project
-  canEditProject(project: Project): boolean {
-    if (!this.currentUser) return false;
-    return (
-      this.currentUser.id === project.ownerId ||
-      this.currentUser.id === project.leadId ||
-      (project.teamMembers ? project.teamMembers.includes(this.currentUser.id) : false)
-    );
-  }
-
-  // Check if project is overdue
   isProjectOverdue(project: Project): boolean {
     const now = new Date();
     if (project.endDate && new Date(project.endDate) < now && project.status !== 'completed') {
@@ -338,14 +303,12 @@ export class ProjectListComponent implements OnInit {
     return pages;
   }
 
-  // Pagination için filtered projects'i slice etmek için getter
   get paginatedProjects(): Project[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     return this.filteredProjects.slice(startIndex, endIndex);
   }
 
-  // Property alias for template compatibility
   get isLoading(): boolean {
     return this.loading;
   }

@@ -95,29 +95,17 @@
               </span>
             </div>
             <div class="project-actions">
-              <button class="action-btn"
-                      *ngIf="currentUser?.role !== UserRole.VIEWER" 
+              <button class="action-btn edit-btn"
+                      *ngIf="canEditProject(project)" 
                       (click)="editProject(project, $event)"
                       title="Düzenle">
                 <i class="fas fa-edit"></i>
               </button>
-              <button class="action-btn danger"
-                      *ngIf="currentUser?.role !== UserRole.VIEWER" 
-                      (click)="deleteProject(project, $event)"
-                      title="Sil">
-                <i class="fas fa-trash"></i>
-              </button>
-              <button class="action-btn warning"
+              <button class="action-btn cancel-btn"
                       *ngIf="canCancelProject(project)"
                       (click)="cancelProject(project, $event)"
                       title="İptal Et">
                 <i class="fas fa-ban"></i>
-              </button>
-              <button class="action-btn success"
-                      *ngIf="canCompleteProject(project)"
-                      (click)="finishProject(project, $event)"
-                      title="Bitir">
-                <i class="fas fa-check"></i>
               </button>
             </div>
           </div>
