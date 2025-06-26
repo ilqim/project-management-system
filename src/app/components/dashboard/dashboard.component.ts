@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { User, UserRole } from '../../models/user.model';
+import { ProjectService } from '../../services/project.service';
+import { TaskService } from '../../services/task.service';
 
 interface StatsData {
   activeProjects: number;
@@ -37,10 +39,10 @@ export class DashboardComponent implements OnInit {
   UserRole = UserRole;
   
   statsData: StatsData = {
-    activeProjects: 12,
-    openTasks: 48,
-    completedTasks: 156,
-    teamMembers: 8
+    activeProjects: 0,
+    openTasks: 0,
+    completedTasks: 0,
+    teamMembers: 0
   };
 
   recentActivities: Activity[] = [
@@ -97,7 +99,12 @@ export class DashboardComponent implements OnInit {
     }
   ];
 
-  constructor(private router: Router, private auth: AuthService) {}
+  constructor(
+    private router: Router,
+    private auth: AuthService,
+    private projectService: ProjectService,
+    private taskService: TaskService
+  ) {}
 
   ngOnInit(): void {
     this.currentUser = this.auth.getCurrentUser();
@@ -108,13 +115,25 @@ export class DashboardComponent implements OnInit {
   }
 
   private loadDashboardData(): void {
-    // Bu metod gerçek uygulamada API'den veri çekecek
-    // Şimdilik mock data kullanıyoruz
-    this.refreshStats();
+    this.projectService.getProjects().subscribe(projects => {
+      const activeProjects = projects.filter(p => p.status === 'active').length;
+      this.taskService.getTasks().subscribe(tasks => {
+        const openTasks = tasks.filter(t => !t.completedAt && t.columnId !== 'done').length;
+        const completedTasks = tasks.filter(t => t.completedAt || t.columnId === 'done').length;
+        const teamMembers = this.auth.getAllUsers().length;
+
+        this.statsData = {
+          activeProjects,
+          openTasks,
+          completedTasks,
+          teamMembers
+        };
+      });
+    });
   }
 
   private refreshStats(): void {
-    // Gerçek uygulamada bu metod API'den güncel istatistikleri çekecek
+    // Deprecated: stats are loaded dynamically in loadDashboardData
     console.log('Dashboard statistics refreshed');
   }
 

@@ -230,6 +230,8 @@ export class ProjectService {
                 project.teamMembers.push(userId);
             }
 
+            project.memberCount = project.teamMembers.length;
+
             this.storage.set('projects', projects);
             observer.next(true);
             observer.complete();
@@ -257,6 +259,8 @@ export class ProjectService {
             if (project.teamMembers) {
                 project.teamMembers = project.teamMembers.filter(id => id !== userId);
             }
+
+            project.memberCount = project.teamMembers ? project.teamMembers.length : 0;
 
             this.storage.set('projects', projects);
             observer.next(true);

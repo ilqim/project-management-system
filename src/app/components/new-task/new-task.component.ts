@@ -51,6 +51,9 @@ export class NewTaskComponent implements OnInit {
 
   private canAssignTo(user: User): boolean {
     if (!this.currentUser) return false;
+    if (user.role === UserRole.VIEWER) {
+      return false;
+    }
     return this.roleRank(user.role) <= this.roleRank(this.currentUser.role);
   }
 

@@ -43,6 +43,7 @@ export class TeamManagementComponent implements OnInit {
           this.project.teamMembers = [];
         }
         this.project.teamMembers.push(this.selectedUserId!);
+        this.project.memberCount = this.project.teamMembers.length;
       }
       this.selectedUserId = null;
       this.refreshAvailable();
