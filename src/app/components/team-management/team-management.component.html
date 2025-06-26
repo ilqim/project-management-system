@@ -1,0 +1,22 @@
+<div class="team-management" *ngIf="project">
+  <h2>Takım Yönetimi - {{ project.name }}</h2>
+
+  <div class="current-members" *ngIf="project.teamMembers?.length">
+    <h3>Mevcut Üyeler</h3>
+    <ul>
+      <li *ngFor="let id of project.teamMembers">{{ getUserName(id) }}</li>
+    </ul>
+  </div>
+
+  <div class="add-member">
+    <select [(ngModel)]="selectedUserId">
+      <option [ngValue]="null">Kullanıcı Seçin</option>
+      <option *ngFor="let user of availableUsers" [value]="user.id">
+        {{ user.name }} ({{ user.role }})
+      </option>
+    </select>
+    <button (click)="addMember()" [disabled]="!selectedUserId">Yeni Takım Üyesi Ekle</button>
+  </div>
+
+  <button class="close-btn" (click)="close()">Kapat</button>
+</div>

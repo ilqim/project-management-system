@@ -6,6 +6,7 @@ import { StorageService } from './storage.service';
 import { AuthService } from './auth.service';
 import { ProjectService } from './project.service';
 import { NotificationService } from './notification.service';
+import { UserRole } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -45,6 +46,11 @@ export class TaskService {
       
       if (!user || !currentProject) {
         observer.error('User or project not found');
+        return;
+      }
+
+      if (user.role === UserRole.DEVELOPER) {
+        observer.error('Permission denied');
         return;
       }
 

@@ -119,6 +119,10 @@
               <i class="fas fa-calendar"></i>
               <span>{{ project.createdAt | date:'shortDate' }}</span>
             </div>
+            <div class="stat-item">
+              <i class="fas fa-user"></i>
+              <span>Başlatan: {{ getOwnerName(project.ownerId) }}</span>
+            </div>
           </div>
 
           <div class="project-progress">

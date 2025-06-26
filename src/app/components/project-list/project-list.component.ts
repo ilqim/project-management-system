@@ -179,6 +179,12 @@ export class ProjectListComponent implements OnInit {
     return due < now;
   }
 
+  getOwnerName(id?: string): string {
+    if (!id) return 'Bilinmiyor';
+    const user = this.authService.getUserById(id);
+    return user ? user.name : id;
+  }
+
   trackByProjectId(index: number, project: Project): any {
     return project.id;
   }

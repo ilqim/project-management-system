@@ -13,6 +13,7 @@ import { ProjectDetailComponent } from './components/project-detail/project-deta
 import { RoleGuard } from './guards/role.guard';
 import { UserRole } from './models/user.model';
 import { TasksComponent } from './components/tasks/tasks.component';
+import { TeamManagementComponent } from './components/team-management/team-management.component';
 
 
 const routes: Routes = [
@@ -21,11 +22,12 @@ const routes: Routes = [
   { path: 'workspaces', component: WorkspaceSelectorComponent, canActivate: [AuthGuard] },
   { path: 'projects', component: ProjectListComponent, canActivate: [AuthGuard] },
   { path: 'projects/new', component: NewProjectComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD] } },
-  { path: 'tasks/new', component: NewTaskComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD, UserRole.DEVELOPER] } },
+  { path: 'tasks/new', component: NewTaskComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD] } },
   { path: 'projects/:id', component: ProjectDetailComponent, canActivate: [AuthGuard] },
   { path: 'tasks', component: TasksComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD, UserRole.DEVELOPER] } },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'team/invite', component: InviteTeamComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD] } },
+  { path: 'team/manage', component: TeamManagementComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD] } },
   { path: 'reports', component: ReportsComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN] } }
 ];
 

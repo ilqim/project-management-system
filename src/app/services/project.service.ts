@@ -45,6 +45,12 @@ export class ProjectService {
 
             const projects = this.storage.get<Project[]>('projects') || [];
 
+            if (user.role === UserRole.ADMIN) {
+                observer.next(projects);
+                observer.complete();
+                return;
+            }
+
             // Filter projects based on user access
             const userProjects = projects.filter(p =>
                 p.ownerId === user.id ||

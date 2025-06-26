@@ -39,9 +39,9 @@ export class ProjectDetailComponent implements OnInit {
         );
     }
 
-    inviteTeam(): void {
+    manageTeam(): void {
         if (!this.project) return;
-        this.router.navigate(['/team/invite']);
+        this.router.navigate(['/team/manage']);
     }
 
     editProject(): void {

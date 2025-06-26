@@ -21,7 +21,7 @@
 
   <section class="actions" *ngIf="canManage()">
     <button class="btn" (click)="editProject()">Projeyi Düzenle</button>
-    <button class="btn" (click)="inviteTeam()">Takım Yönetimi</button>
+    <button class="btn" (click)="manageTeam()">Takım Yönetimi</button>
   </section>
 
   <p class="readonly" *ngIf="!canManage()">Bu projeyi düzenleme yetkiniz yok.</p>

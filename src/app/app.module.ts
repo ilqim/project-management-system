@@ -23,6 +23,7 @@ import { ReportsComponent } from './components/reports/reports.component';
 import { ProjectDetailComponent } from './components/project-detail/project-detail.component';
 import { RoleGuard } from './guards/role.guard';
 import { TasksComponent } from './components/tasks/tasks.component';
+import { TeamManagementComponent } from './components/team-management/team-management.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { TasksComponent } from './components/tasks/tasks.component';
     TaskCardComponent,
     TaskDetailComponent,
     ProjectDetailComponent,
+    TeamManagementComponent,
     NewProjectComponent,
     NewTaskComponent,
     TasksComponent,
