@@ -86,6 +86,50 @@ export class ProjectListComponent implements OnInit {
     });
   }
 
+  cancelProject(project: Project, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.projectService.cancelProject(project.id).subscribe(updated => {
+      project.status = updated.status;
+      this.applyFilters();
+    });
+  }
+
+  finishProject(project: Project, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.projectService.completeProject(project.id).subscribe(updated => {
+      project.status = updated.status;
+      this.applyFilters();
+    });
+  }
+
+  canCancelProject(project: Project): boolean {
+    if (!this.currentUser) return false;
+    const owner = this.authService.getUserById(project.ownerId || '');
+    return (
+      [UserRole.ADMIN, UserRole.PROJECT_LEAD].includes(this.currentUser.role) &&
+      owner?.role === UserRole.PROJECT_LEAD &&
+      project.status === 'active'
+    );
+  }
+
+  canCompleteProject(project: Project): boolean {
+    if (!this.currentUser) return false;
+    if (this.currentUser.role === UserRole.ADMIN) {
+      return project.status !== 'completed' && project.status !== 'cancelled';
+    }
+    const owner = this.authService.getUserById(project.ownerId || '');
+    return (
+      this.currentUser.role === UserRole.PROJECT_LEAD &&
+      owner?.id === this.currentUser.id &&
+      project.status !== 'completed' &&
+      project.status !== 'cancelled'
+    );
+  }
+
   applyFilters(): void {
     let filtered = this.projects;
 

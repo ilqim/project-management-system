@@ -45,7 +45,7 @@ export class ProjectService {
 
             const projects = this.storage.get<Project[]>('projects') || [];
 
-            if (user.role === UserRole.ADMIN) {
+            if (user.role === UserRole.ADMIN || user.role === UserRole.VIEWER) {
                 observer.next(projects);
                 observer.complete();
                 return;
@@ -144,6 +144,14 @@ export class ProjectService {
         });
     }
 
+    cancelProject(projectId: string): Observable<Project> {
+        return this.updateProject(projectId, { status: ProjectStatus.CANCELLED });
+    }
+
+    completeProject(projectId: string): Observable<Project> {
+        return this.updateProject(projectId, { status: ProjectStatus.COMPLETED });
+    }
+
     deleteProject(projectId: string): Observable<boolean> {
         return new Observable(observer => {
             const projects = this.storage.get<Project[]>('projects') || [];
@@ -199,7 +207,7 @@ export class ProjectService {
                 observer.error('Project not found');
                 return;
             }
-            
+
             const user = this.auth.getUserById(userId);
 
             if (!user || user.role === UserRole.VIEWER) {
