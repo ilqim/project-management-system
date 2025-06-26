@@ -1,20 +1,56 @@
 <div class="tasks-page">
+    <app-header></app-header>
   <h1>Görevler</h1>
-  <div *ngIf="filteredTasks.length === 0">Gösterilecek görev bulunmuyor.</div>
-  <ul class="task-list" *ngIf="filteredTasks.length > 0">
-    <li *ngFor="let task of filteredTasks" class="task-item">
-      <div class="task-header">
-        <input type="checkbox" *ngIf="canToggleComplete(task)" (change)="toggleComplete(task)" />
-        <strong>{{ task.title }}</strong>
-        <span class="project">({{ getProjectName(task.projectId) }})</span>
-      </div>
-      <div class="task-meta">
-        <span *ngIf="task.assigneeId">Atanan: {{ getUserName(task.assigneeId) }}</span>
-        <span *ngIf="currentUser?.role === UserRole.ADMIN">
-          Veren: {{ getUserName(task.reporterId) }}
-        </span>
-      </div>
-      <p class="description">{{ task.description }}</p>
-    </li>
-  </ul>
+  <!-- Section for tasks created/assigned by the project lead -->
+  <ng-container *ngIf="currentUser?.role === UserRole.PROJECT_LEAD">
+    <h2>Verdiğim Görevler</h2>
+    <div *ngIf="assignedTasks.length === 0">Gösterilecek görev bulunmuyor.</div>
+    <ul class="task-list" *ngIf="assignedTasks.length > 0">
+      <li *ngFor="let task of assignedTasks" class="task-item">
+        <div class="task-header">
+          <input type="checkbox" *ngIf="canToggleComplete(task)" (change)="toggleComplete(task)" />
+          <strong>{{ task.title }}</strong>
+          <span class="project">({{ getProjectName(task.projectId) }})</span>
+        </div>
+        <div class="task-meta">
+          <span *ngIf="task.assigneeId">Atanan: {{ getUserName(task.assigneeId) }}</span>
+        </div>
+        <p class="description">{{ task.description }}</p>
+      </li>
+    </ul>
+
+    <h2>Kendi Görevlerim</h2>
+    <div *ngIf="myTasks.length === 0">Görev bulunmuyor.</div>
+    <ul class="task-list" *ngIf="myTasks.length > 0">
+      <li *ngFor="let task of myTasks" class="task-item">
+        <div class="task-header">
+          <input type="checkbox" *ngIf="canToggleComplete(task)" (change)="toggleComplete(task)" />
+          <strong>{{ task.title }}</strong>
+          <span class="project">({{ getProjectName(task.projectId) }})</span>
+        </div>
+        <p class="description">{{ task.description }}</p>
+      </li>
+    </ul>
+  </ng-container>
+
+  <!-- Default view for other roles -->
+  <ng-container *ngIf="currentUser && currentUser.role !== UserRole.PROJECT_LEAD">
+    <div *ngIf="filteredTasks.length === 0">Gösterilecek görev bulunmuyor.</div>
+    <ul class="task-list" *ngIf="filteredTasks.length > 0">
+      <li *ngFor="let task of filteredTasks" class="task-item">
+        <div class="task-header">
+          <input type="checkbox" *ngIf="canToggleComplete(task)" (change)="toggleComplete(task)" />
+          <strong>{{ task.title }}</strong>
+          <span class="project">({{ getProjectName(task.projectId) }})</span>
+        </div>
+        <div class="task-meta">
+          <span *ngIf="task.assigneeId">Atanan: {{ getUserName(task.assigneeId) }}</span>
+          <span *ngIf="currentUser?.role === UserRole.ADMIN">
+            Veren: {{ getUserName(task.reporterId) }}
+          </span>
+        </div>
+        <p class="description">{{ task.description }}</p>
+      </li>
+    </ul>
+  </ng-container>
 </div>

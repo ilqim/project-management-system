@@ -15,6 +15,8 @@ export class TasksComponent implements OnInit {
   tasks: Task[] = [];
   filteredTasks: Task[] = [];
   currentUser: User | null = null;
+  myTasks: Task[] = [];
+  assignedTasks: Task[] = [];
   projects: Project[] = [];
   UserRole = UserRole;
 
@@ -42,21 +44,31 @@ export class TasksComponent implements OnInit {
   private applyRoleFilter(): void {
     if (!this.currentUser) {
       this.filteredTasks = [];
+      this.myTasks = [];
+      this.assignedTasks = [];
       return;
     }
 
     switch (this.currentUser.role) {
       case UserRole.ADMIN:
         this.filteredTasks = this.tasks;
+        this.myTasks = this.tasks;
+        this.assignedTasks = this.tasks;
         break;
       case UserRole.PROJECT_LEAD:
-        this.filteredTasks = this.tasks.filter(t => t.reporterId === this.currentUser!.id);
+        this.assignedTasks = this.tasks.filter(t => t.reporterId === this.currentUser!.id);
+        this.myTasks = this.tasks.filter(t => t.assigneeId === this.currentUser!.id);
+        this.filteredTasks = this.assignedTasks;
         break;
       case UserRole.DEVELOPER:
-        this.filteredTasks = this.tasks.filter(t => t.assigneeId === this.currentUser!.id);
+        this.myTasks = this.tasks.filter(t => t.assigneeId === this.currentUser!.id);
+        this.filteredTasks = this.myTasks;
+        this.assignedTasks = [];
         break;
       default:
         this.filteredTasks = [];
+        this.myTasks = [];
+        this.assignedTasks = [];
     }
   }
   getUserName(userId: string): string {

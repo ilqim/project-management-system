@@ -40,7 +40,7 @@ export class TeamManagementComponent implements OnInit {
     if (!this.project) return;
     const current = this.project.teamMembers || [];
     this.availableUsers = this.allUsers.filter(
-      u => !current.includes(u.id) && this.canAddToTeam(u)
+      u => !current.includes(u.id) && this.canAddToTeam(u) && u.role !== UserRole.VIEWER
     );
   }
 
@@ -66,6 +66,7 @@ export class TeamManagementComponent implements OnInit {
 
   private canAddToTeam(user: User): boolean {
     if (!this.currentUser) return false;
+    if (user.role === UserRole.VIEWER) return false;
     return this.roleRank(user.role) <= this.roleRank(this.currentUser.role);
   }
 

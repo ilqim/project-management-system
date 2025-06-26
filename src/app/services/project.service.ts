@@ -199,6 +199,13 @@ export class ProjectService {
                 observer.error('Project not found');
                 return;
             }
+            
+            const user = this.auth.getUserById(userId);
+
+            if (!user || user.role === UserRole.VIEWER) {
+                observer.error('Cannot add viewer to project');
+                return;
+            }
 
             // Add to members array
             if (!project.members) {
@@ -210,15 +217,12 @@ export class ProjectService {
             );
 
             if (!existingMember) {
-                const user = this.auth.getUserById(userId);
-                if (user) {
-                    project.members.push({
-                        id: userId,
-                        name: user.name,
-                        email: user.email,
-                        role: 'member'
-                    });
-                }
+                project.members.push({
+                    id: userId,
+                    name: user.name,
+                    email: user.email,
+                    role: 'member'
+                });
             }
 
             // Add to teamMembers array

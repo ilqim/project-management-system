@@ -54,6 +54,14 @@ export class TaskService {
         return;
       }
 
+      if (taskData.assigneeId) {
+        const assignee = this.auth.getUserById(taskData.assigneeId);
+        if (assignee && assignee.role === UserRole.VIEWER) {
+          observer.error('Cannot assign task to viewer');
+          return;
+        }
+      }
+
       const task: Task = {
         id: this.storage.generateId(),
         title: taskData.title || '',
@@ -99,9 +107,16 @@ export class TaskService {
       }
 
       const oldTask = tasks[taskIndex];
-      tasks[taskIndex] = { 
-        ...oldTask, 
-        ...updates, 
+      if (updates.assigneeId) {
+        const assignee = this.auth.getUserById(updates.assigneeId);
+        if (assignee && assignee.role === UserRole.VIEWER) {
+          observer.error('Cannot assign task to viewer');
+          return;
+        }
+      }
+      tasks[taskIndex] = {
+        ...oldTask,
+        ...updates,
         updatedAt: new Date() 
       };
       
