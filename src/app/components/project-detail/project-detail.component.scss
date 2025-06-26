@@ -23,4 +23,16 @@
 .members ul {
   list-style: none;
   padding: 0;
+  }
+
+.actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.readonly {
+  margin-top: 1rem;
+  color: #888;
+  font-style: italic;
 }
