@@ -234,6 +234,12 @@ export class AuthService {
     }
   }
 
+  getAllUsers(): User[] {
+    const users = this.storage.get<User[]>('users') || [];
+    return [...this.demoUsers, ...users];
+  }
+
+
   private createDefaultUser(email: string): User {
     return {
       id: this.storage.generateId(),
