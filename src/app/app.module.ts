@@ -22,6 +22,7 @@ import { InviteTeamComponent } from './components/invite-team/invite-team.compon
 import { ReportsComponent } from './components/reports/reports.component';
 import { ProjectDetailComponent } from './components/project-detail/project-detail.component';
 import { RoleGuard } from './guards/role.guard';
+import { TasksComponent } from './components/tasks/tasks.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { RoleGuard } from './guards/role.guard';
     ProjectDetailComponent,
     NewProjectComponent,
     NewTaskComponent,
+    TasksComponent,
     InviteTeamComponent,
     ReportsComponent,
     TimeAgoPipe,

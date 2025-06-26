@@ -1,0 +1,11 @@
+<div class="tasks-page">
+  <h1>Görevler</h1>
+  <div *ngIf="filteredTasks.length === 0">Gösterilecek görev bulunmuyor.</div>
+  <ul class="task-list" *ngIf="filteredTasks.length > 0">
+    <li *ngFor="let task of filteredTasks" class="task-item">
+      <strong>{{ task.title }}</strong>
+      <span class="project">({{ getProjectName(task.projectId) }})</span>
+      <span class="assignee" *ngIf="task.assigneeId"> - {{ task.assigneeId }}</span>
+    </li>
+  </ul>
+</div>
