@@ -27,6 +27,10 @@
         </option>
       </select>
     </div>
+    <div class="form-group">
+      <label for="dueDate">Bitiş Tarihi</label>
+      <input id="dueDate" name="dueDate" type="date" [(ngModel)]="dueDate" />
+    </div>
     <button type="submit" class="btn btn-primary">Oluştur</button>
     <button type="button" class="btn" (click)="cancel()">İptal</button>
   </form>

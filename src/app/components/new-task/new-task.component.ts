@@ -14,6 +14,7 @@ export class NewTaskComponent implements OnInit {
   description = '';
   assigneeSearch = '';
   assigneeId: string | null = null;
+  dueDate: string | null = null;
   users: User[] = [];
   filteredUsers: User[] = [];
   currentUser: User | null = null;
@@ -70,6 +71,9 @@ export class NewTaskComponent implements OnInit {
     const taskData: any = { title: this.title, description: this.description };
     if (this.assigneeId) {
       taskData.assigneeId = this.assigneeId;
+    }
+    if (this.dueDate) {
+      taskData.dueDate = new Date(this.dueDate);
     }
     this.taskService.createTask(taskData)
       .subscribe(() => {

@@ -4,6 +4,7 @@ import { ProjectService } from '../../services/project.service';
 import { AuthService } from '../../services/auth.service';
 import { Project } from '../../models/project.model';
 import { User, UserRole } from '../../models/user.model';
+import { TaskService } from '../../services/task.service';
 
 interface ProjectForm {
   name: string;
@@ -38,11 +39,13 @@ export class ProjectListComponent implements OnInit {
   };
 
   currentUser: User | null = null;
+  taskCounts: { [projectId: string]: number } = {};
 
   constructor(
     private projectService: ProjectService,
     private router: Router,
-    private authService: AuthService // Add AuthService
+    private authService: AuthService, // Add AuthService
+    private taskService: TaskService
   ) {}
 
   ngOnInit(): void {
@@ -52,16 +55,34 @@ export class ProjectListComponent implements OnInit {
 
   loadProjects(): void {
     this.loading = true; // Use loading instead of isLoading
-    this.projectService.getProjects().subscribe({
-      next: (projects) => {
-        this.projects = projects;
-        this.applyFilters();
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Projeler yüklenirken hata oluştu:', error);
-        this.loading = false;
-      }
+    this.taskService.getTasks().subscribe(tasks => {
+      const counts: { [pid: string]: number } = {};
+      tasks.forEach(t => {
+        if (!this.currentUser) return;
+        if (
+          this.currentUser.role === UserRole.ADMIN ||
+          this.currentUser.role === UserRole.PROJECT_LEAD
+        ) {
+          counts[t.projectId] = (counts[t.projectId] || 0) + 1;
+        } else if (
+          this.currentUser.role === UserRole.DEVELOPER &&
+          t.assigneeId === this.currentUser.id
+        ) {
+          counts[t.projectId] = (counts[t.projectId] || 0) + 1;
+        }
+      });
+      this.projectService.getProjects().subscribe({
+        next: projects => {
+          this.projects = projects.map(p => ({ ...p, taskCount: counts[p.id] || 0 }));
+          this.taskCounts = counts;
+          this.applyFilters();
+          this.loading = false;
+        },
+        error: error => {
+          console.error('Projeler yüklenirken hata oluştu:', error);
+          this.loading = false;
+        }
+      });
     });
   }
 

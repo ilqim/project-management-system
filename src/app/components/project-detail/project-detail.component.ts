@@ -4,6 +4,8 @@ import { Project } from '../../models/project.model';
 import { ProjectService } from '../../services/project.service';
 import { AuthService } from '../../services/auth.service';
 import { User, UserRole } from '../../models/user.model';
+import { Task } from '../../models/task.model';
+import { TaskService } from '../../services/task.service';
 
 @Component({
     selector: 'app-project-detail',
@@ -15,12 +17,14 @@ export class ProjectDetailComponent implements OnInit {
     loading = false;
     currentUser: User | null = null;
     UserRole = UserRole;
+    memberTasks: { [memberId: string]: Task[] } = {};
 
     constructor(
         private route: ActivatedRoute,
         private router: Router,
         private projectService: ProjectService,
-        private auth: AuthService
+        private auth: AuthService,
+        private taskService: TaskService
     ) { }
 
     ngOnInit(): void {
@@ -67,6 +71,7 @@ export class ProjectDetailComponent implements OnInit {
                 this.project = project;
                 if (project) {
                     this.projectService.setCurrentProject(project.id);
+                    this.loadMemberTasks(project.id);
                 }
                 this.loading = false;
             },
@@ -75,6 +80,22 @@ export class ProjectDetailComponent implements OnInit {
             }
         });
     }
+
+    loadMemberTasks(projectId: string): void {
+        this.taskService.getTasks(projectId).subscribe(tasks => {
+            const map: { [id: string]: Task[] } = {};
+            tasks.forEach(t => {
+                if (t.assigneeId) {
+                    if (!map[t.assigneeId]) {
+                        map[t.assigneeId] = [];
+                    }
+                    map[t.assigneeId].push(t);
+                }
+            });
+            this.memberTasks = map;
+        });
+    }
+
 
     getMemberName(id: string): string {
         const user = this.auth.getUserById(id);

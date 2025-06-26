@@ -17,10 +17,13 @@
         <li *ngFor="let id of p.teamMembers">
           {{ getMemberName(id) }}
           <button
-            *ngIf="canManage()"
+            *ngIf="canManage() && id !== currentUser?.id"
             class="assign-btn"
             (click)="assignTask(id)"
           >Görev Ver</button>
+          <ul class="member-tasks" *ngIf="memberTasks[id]?.length">
+            <li *ngFor="let task of memberTasks[id]">{{ task.title }}</li>
+          </ul>
         </li>
       </ul>
     </div>
