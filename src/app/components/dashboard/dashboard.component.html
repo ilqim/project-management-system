@@ -119,25 +119,29 @@
       <section class="quick-actions-section">
         <h2 class="section-title">Hızlı Aksiyonlar</h2>
         <div class="quick-actions">
-          <button class="action-btn primary" 
-                  (click)="createNewProject()" 
+          <button class="action-btn primary"
+                  *ngIf="currentUser?.role === UserRole.ADMIN || currentUser?.role === UserRole.PROJECT_LEAD"
+                  (click)="createNewProject()"
                   title="Yeni proje oluştur">
             <i class="fas fa-plus"></i>
             Yeni Proje
           </button>
-          <button class="action-btn secondary" 
+          <button class="action-btn secondary"
+                  *ngIf="currentUser && currentUser.role !== UserRole.VIEWER"
                   (click)="addNewTask()"
                   title="Yeni görev ekle">
             <i class="fas fa-tasks"></i>
             Görev Ekle
           </button>
-          <button class="action-btn tertiary" 
+          <button class="action-btn tertiary"
+                  *ngIf="currentUser?.role === UserRole.ADMIN || currentUser?.role === UserRole.PROJECT_LEAD"
                   (click)="inviteTeamMember()"
                   title="Takım üyesi davet et">
             <i class="fas fa-user-plus"></i>
             Takım Davet Et
           </button>
-          <button class="action-btn info" 
+          <button class="action-btn info"
+                  *ngIf="currentUser?.role === UserRole.ADMIN"
                   (click)="viewReports()"
                   title="Raporları görüntüle">
             <i class="fas fa-chart-bar"></i>

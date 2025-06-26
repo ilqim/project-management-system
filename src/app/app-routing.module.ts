@@ -10,18 +10,20 @@ import { NewTaskComponent } from './components/new-task/new-task.component';
 import { InviteTeamComponent } from './components/invite-team/invite-team.component';
 import { ReportsComponent } from './components/reports/reports.component';
 import { ProjectDetailComponent } from './components/project-detail/project-detail.component';
+import { RoleGuard } from './guards/role.guard';
+import { UserRole } from './models/user.model';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'workspaces', component: WorkspaceSelectorComponent, canActivate: [AuthGuard] },
   { path: 'projects', component: ProjectListComponent, canActivate: [AuthGuard] },
-  { path: 'projects/new', component: NewProjectComponent, canActivate: [AuthGuard] },
-  { path: 'tasks/new', component: NewTaskComponent, canActivate: [AuthGuard] },
+  { path: 'projects/new', component: NewProjectComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD] } },
+  { path: 'tasks/new', component: NewTaskComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD, UserRole.DEVELOPER] } },
   { path: 'projects/:id', component: ProjectDetailComponent, canActivate: [AuthGuard] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-  { path: 'team/invite', component: InviteTeamComponent, canActivate: [AuthGuard] },
-  { path: 'reports', component: ReportsComponent, canActivate: [AuthGuard] }
+  { path: 'team/invite', component: InviteTeamComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD] } },
+  { path: 'reports', component: ReportsComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN] } }
 ];
 
 @NgModule({

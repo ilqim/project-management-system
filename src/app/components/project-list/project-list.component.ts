@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { AuthService } from '../../services/auth.service';
 import { Project } from '../../models/project.model';
+import { User, UserRole } from '../../models/user.model';
 
 interface ProjectForm {
   name: string;
@@ -36,7 +37,7 @@ export class ProjectListComponent implements OnInit {
     startDate: new Date()
   };
 
-  currentUser: any = null;
+  currentUser: User | null = null;
 
   constructor(
     private projectService: ProjectService,
@@ -147,6 +148,12 @@ export class ProjectListComponent implements OnInit {
       });
     }
   }
+
+  canCreateProject(): boolean {
+    if (!this.currentUser) return false;
+    return [UserRole.ADMIN, UserRole.PROJECT_LEAD].includes(this.currentUser.role);
+  }
+
 
   getStatusText(status: string): string {
     const statusMap: { [key: string]: string } = {

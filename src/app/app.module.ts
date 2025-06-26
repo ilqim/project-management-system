@@ -21,6 +21,7 @@ import { NewTaskComponent } from './components/new-task/new-task.component';
 import { InviteTeamComponent } from './components/invite-team/invite-team.component';
 import { ReportsComponent } from './components/reports/reports.component';
 import { ProjectDetailComponent } from './components/project-detail/project-detail.component';
+import { RoleGuard } from './guards/role.guard';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,7 @@ import { ProjectDetailComponent } from './components/project-detail/project-deta
     FormsModule,
     AppRoutingModule
   ],
-  providers: [AuthGuard],
+  providers: [AuthGuard, RoleGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { User, UserRole } from '../../models/user.model';
 
 interface StatsData {
   activeProjects: number;
@@ -30,6 +32,9 @@ interface UpcomingTask {
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
+
+  currentUser: User | null = null;
+  UserRole = UserRole;
   
   statsData: StatsData = {
     activeProjects: 12,
@@ -92,10 +97,14 @@ export class DashboardComponent implements OnInit {
     }
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private auth: AuthService) {}
 
   ngOnInit(): void {
+    this.currentUser = this.auth.getCurrentUser();
     this.loadDashboardData();
+    if (this.currentUser?.role === UserRole.DEVELOPER) {
+      this.upcomingTasks = this.upcomingTasks.filter(t => t.assignee === this.currentUser?.name);
+    }
   }
 
   private loadDashboardData(): void {
