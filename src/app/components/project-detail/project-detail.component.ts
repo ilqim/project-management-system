@@ -50,6 +50,11 @@ export class ProjectDetailComponent implements OnInit {
         this.router.navigate(['/projects/new']);
     }
 
+    assignTask(userId: string): void {
+        this.router.navigate(['/tasks/new'], { queryParams: { assigneeId: userId } });
+    }
+
+
 
     loadProject(): void {
         const id = this.route.snapshot.paramMap.get('id');

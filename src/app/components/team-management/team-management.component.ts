@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Project } from '../../models/project.model';
-import { User } from '../../models/user.model';
+import { User, UserRole } from '../../models/user.model';
 import { ProjectService } from '../../services/project.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -15,6 +15,13 @@ export class TeamManagementComponent implements OnInit {
   allUsers: User[] = [];
   availableUsers: User[] = [];
   selectedUserId: string | null = null;
+  currentUser: User | null = null;
+  private roleHierarchy = [
+    UserRole.VIEWER,
+    UserRole.DEVELOPER,
+    UserRole.PROJECT_LEAD,
+    UserRole.ADMIN
+  ];
 
   constructor(
     private projectService: ProjectService,
@@ -23,6 +30,7 @@ export class TeamManagementComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.currentUser = this.authService.getCurrentUser();
     this.project = this.projectService.getCurrentProject();
     this.allUsers = this.authService.getAllUsers();
     this.refreshAvailable();
@@ -31,7 +39,9 @@ export class TeamManagementComponent implements OnInit {
   refreshAvailable(): void {
     if (!this.project) return;
     const current = this.project.teamMembers || [];
-    this.availableUsers = this.allUsers.filter(u => !current.includes(u.id));
+    this.availableUsers = this.allUsers.filter(
+      u => !current.includes(u.id) && this.canAddToTeam(u)
+    );
   }
 
   addMember(): void {
@@ -49,6 +59,16 @@ export class TeamManagementComponent implements OnInit {
       this.refreshAvailable();
     });
   }
+
+  private roleRank(role: UserRole): number {
+    return this.roleHierarchy.indexOf(role);
+  }
+
+  private canAddToTeam(user: User): boolean {
+    if (!this.currentUser) return false;
+    return this.roleRank(user.role) <= this.roleRank(this.currentUser.role);
+  }
+
 
   getUserName(id: string): string {
     const user = this.authService.getUserById(id);

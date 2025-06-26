@@ -14,7 +14,14 @@
     <div class="members" *ngIf="p.teamMembers?.length">
       <h3>Takım Üyeleri</h3>
       <ul>
-        <li *ngFor="let id of p.teamMembers">{{ getMemberName(id) }}</li>
+        <li *ngFor="let id of p.teamMembers">
+          {{ getMemberName(id) }}
+          <button
+            *ngIf="canManage()"
+            class="assign-btn"
+            (click)="assignTask(id)"
+          >Görev Ver</button>
+        </li>
       </ul>
     </div>
   </section>

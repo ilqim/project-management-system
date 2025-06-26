@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TaskService } from '../../services/task.service';
 import { AuthService } from '../../services/auth.service';
 import { User, UserRole } from '../../models/user.model';
@@ -28,6 +28,7 @@ export class NewTaskComponent implements OnInit {
   constructor(
     private taskService: TaskService,
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService
   ) {}
 
@@ -37,6 +38,10 @@ export class NewTaskComponent implements OnInit {
       .getAllUsers()
       .filter(u => this.canAssignTo(u));
     this.filteredUsers = this.users.slice();
+    const preselect = this.route.snapshot.queryParamMap.get('assigneeId');
+    if (preselect && this.users.some(u => u.id === preselect)) {
+      this.assigneeId = preselect;
+    }
   }
 
   filterUsers(): void {
