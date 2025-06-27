@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { AuthService } from '../../services/auth.service';
-import { User } from '../../models/user.model';
+import { User, UserRole } from '../../models/user.model';
 
 interface ProjectForm {
   name: string;
@@ -32,7 +32,6 @@ export class EditProjectComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.allUsers = this.auth.getAllUsers();
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.projectId = id;
@@ -45,10 +44,30 @@ export class EditProjectComponent implements OnInit {
           this.projectForm.teamMembers = project.teamMembers ? [...project.teamMembers] : [];
           this.original.name = project.name;
           this.original.description = project.description || '';
+          const owner = project.ownerId ? this.auth.getUserById(project.ownerId) : null;
+          if (owner) {
+            this.filterUsers(owner);
+          } else {
+            this.allUsers = [];
+          }
         }
         this.loaded = true;
       });
     }
+  }
+
+  private filterUsers(owner: User): void {
+    let users = this.auth.getAllUsers().filter(u => u.role !== UserRole.VIEWER);
+
+    if (owner.role === UserRole.PROJECT_LEAD) {
+      users = users.filter(u => u.role === UserRole.DEVELOPER);
+    } else if (owner.role === UserRole.ADMIN) {
+      users = users.filter(u => u.role !== UserRole.ADMIN);
+    }
+
+    users = users.filter(u => u.id !== owner.id);
+
+    this.allUsers = users;
   }
 
   private toDateInput(date: Date | string | undefined): string {
