@@ -20,6 +20,7 @@ export class ProjectDetailComponent implements OnInit {
     memberTasks: { [memberId: string]: Task[] } = {};
     pendingInvites: ProjectInvite[] = [];
     expandedMembers: { [memberId: string]: boolean } = {};
+    tasksLoaded = false; // Görevlerin yüklenip yüklenmediğini takip et
 
     constructor(
         private route: ActivatedRoute,
@@ -34,8 +35,10 @@ export class ProjectDetailComponent implements OnInit {
         this.loadProject();
     }
 
+    // Düzeltilmiş toggleMemberTasks - API çağrısı kaldırıldı
     toggleMemberTasks(memberId: string): void {
         this.expandedMembers[memberId] = !this.expandedMembers[memberId];
+        // API çağrısı kaldırıldı - görevler zaten başlangıçta yüklendi
     }
 
     canManage(): boolean {
@@ -81,8 +84,6 @@ export class ProjectDetailComponent implements OnInit {
         });
     }
 
-
-
     loadProject(): void {
         const id = this.route.snapshot.paramMap.get('id');
         if (!id) {
@@ -94,7 +95,7 @@ export class ProjectDetailComponent implements OnInit {
                 this.project = project;
                 if (project) {
                     this.projectService.setCurrentProject(project.id);
-                    this.loadMemberTasks(project.id);
+                    this.loadMemberTasks(project.id); // Sadece bir kez yükle
                     this.loadInvites(project.id);
                 }
                 this.loading = false;
@@ -105,25 +106,47 @@ export class ProjectDetailComponent implements OnInit {
         });
     }
 
+    // Optimize edilmiş loadMemberTasks metodu
     loadMemberTasks(projectId: string): void {
-        this.taskService.getTasks(projectId).subscribe(tasks => {
-            const map: { [id: string]: Task[] } = {};
-            tasks.forEach(t => {
-                if (t.assigneeId) {
-                    if (!map[t.assigneeId]) {
-                        map[t.assigneeId] = [];
-                    }
-                    map[t.assigneeId].push(t);
+        if (this.tasksLoaded) {
+            return; // Zaten yüklenmişse tekrar yükleme
+        }
+
+        console.log('Loading member tasks for project:', projectId);
+        
+        this.taskService.getTasks(projectId).subscribe({
+            next: (tasks) => {
+                console.log('Tasks received:', tasks);
+                
+                const map: { [id: string]: Task[] } = {};
+                
+                // Tüm takım üyelerini başlangıçta boş array ile initialize et
+                if (this.project?.teamMembers) {
+                    this.project.teamMembers.forEach(memberId => {
+                        map[memberId] = [];
+                    });
                 }
-            });
-            this.memberTasks = map;
+                
+                // Görevleri üyelerine göre grupla
+                tasks.forEach(task => {
+                    if (task.assigneeId && this.project?.teamMembers?.includes(task.assigneeId)) {
+                        map[task.assigneeId].push(task);
+                    }
+                });
+                
+                this.memberTasks = map;
+                this.tasksLoaded = true; // Görevler yüklendi işareti
+                console.log('Member tasks mapped:', this.memberTasks);
+            },
+            error: (error) => {
+                console.error('Error loading member tasks:', error);
+            }
         });
     }
 
-
     getMemberName(id: string): string {
         const user = this.auth.getUserById(id);
-        return user ? user.name : id;
+        return user ? user.name : `Kullanıcı ${id}`;
     }
 
     loadInvites(projectId: string): void {
@@ -138,5 +161,18 @@ export class ProjectDetailComponent implements OnInit {
 
     isOverdue(dueDate: Date): boolean {
         return new Date(dueDate) < new Date();
+    }
+
+    // Manuel yenileme metodu - sadece buton tıklandığında çalışır
+    refreshMemberTasks(): void {
+        if (this.project) {
+            this.tasksLoaded = false; // Reset flag
+            this.loadMemberTasks(this.project.id);
+        }
+    }
+
+    // Yeni görev ekledikten sonra çağrılacak metod
+    onTaskAssigned(): void {
+        this.refreshMemberTasks();
     }
 }
