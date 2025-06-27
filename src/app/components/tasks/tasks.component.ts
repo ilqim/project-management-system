@@ -18,6 +18,7 @@ export class TasksComponent implements OnInit {
   myTasks: Task[] = [];
   assignedTasks: Task[] = [];
   projects: Project[] = [];
+  tagOptions = ['Bug', 'Feature', 'High Priority', 'Improvement', 'Documentation', 'Testing'];
   availableTags: string[] = [];
   selectedTag = '';
   selectedProject = '';
@@ -105,9 +106,7 @@ export class TasksComponent implements OnInit {
   }
 
   private updateAvailableTags(): void {
-    const tagSet = new Set<string>();
-    this.tasks.forEach(t => t.tags.forEach(tag => tagSet.add(tag)));
-    this.availableTags = Array.from(tagSet);
+    this.availableTags = [...this.tagOptions];
   }
   getUserName(userId: string): string {
     const user = this.authService.getUserById(userId);

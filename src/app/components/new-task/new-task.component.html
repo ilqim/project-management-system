@@ -32,8 +32,10 @@
       <input id="dueDate" name="dueDate" type="date" [(ngModel)]="dueDate" />
     </div>
     <div class="form-group">
-      <label for="tags">Etiketler (virgülle ayrılmış)</label>
-      <input id="tags" name="tags" [(ngModel)]="tagsInput" placeholder="Bug, Feature" />
+      <label for="tags">Etiketler</label>
+      <select id="tags" name="tags" multiple [(ngModel)]="selectedTags">
+        <option *ngFor="let tag of tagOptions" [ngValue]="tag">{{ tag }}</option>
+      </select>
     </div>
     <button type="submit" class="btn btn-primary">Oluştur</button>
     <button type="button" class="btn" (click)="cancel()">İptal</button>

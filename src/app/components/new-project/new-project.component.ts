@@ -71,7 +71,7 @@ export class NewProjectComponent implements OnInit {
         description: this.description,
         startDate: this.startDate,
         endDate: this.endDate,
-        teamMembers: []
+        teamMembers: this.teamMembers
       })
       .subscribe(project => {
         selected.forEach(id => {
