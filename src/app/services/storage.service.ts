@@ -48,13 +48,13 @@ export class StorageService {
   }
 
   private encrypt(data: string): string {
-    // Simple base64 encoding for demo purposes
-    return btoa(data);
+    // Encode as base64 but support unicode characters
+    return btoa(unescape(encodeURIComponent(data)));
   }
 
   private decrypt(data: string): string {
-    // Simple base64 decoding for demo purposes
-    return atob(data);
+    // Decode base64 and restore unicode characters
+    return decodeURIComponent(escape(atob(data)));
   }
 
   generateId(): string {
