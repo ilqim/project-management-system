@@ -24,9 +24,27 @@ export class NewProjectComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.allUsers = this.authService
+    const currentUser = this.authService.getCurrentUser();
+
+    // Start with all non-viewer users
+    let users = this.authService
       .getAllUsers()
       .filter(u => u.role !== UserRole.VIEWER);
+
+      if (currentUser) {
+      if (currentUser.role === UserRole.PROJECT_LEAD) {
+        // Project lead can only select developers
+        users = users.filter(u => u.role === UserRole.DEVELOPER);
+      } else if (currentUser.role === UserRole.ADMIN) {
+        // Admin can select leads and developers
+        users = users.filter(u => u.role !== UserRole.ADMIN);
+      }
+
+      // Remove current user from the list
+      users = users.filter(u => u.id !== currentUser.id);
+    }
+
+    this.allUsers = users;
   }
 
   toggleMember(userId: string): void {
