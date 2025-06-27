@@ -1,5 +1,5 @@
 <header class="app-header">
-  <div class="app-name">ProjectFlow</div>
+  <div class="app-name" (click)="goDashboard()">ProjectFlow</div>
   <div class="workspace-name" *ngIf="workspace">{{ workspace.name }}</div>
   <app-search></app-search>
   <span class="spacer"></span>

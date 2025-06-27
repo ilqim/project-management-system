@@ -16,12 +16,10 @@ export class NewTaskComponent implements OnInit {
   description = '';
   tagOptions = ['Bug', 'Feature', 'High Priority', 'Improvement', 'Documentation', 'Testing'];
   selectedTags: string[] = [];
-  assigneeSearch = '';
   assigneeId: string | null = null;
   dueDate: string | null = null;
 
   users: User[] = [];
-  filteredUsers: User[] = [];
   currentUser: User | null = null;
 
   private roleHierarchy = [
@@ -69,20 +67,10 @@ export class NewTaskComponent implements OnInit {
       .filter((u: User | undefined): u is User => !!u)
       .filter(user => this.canAssignTo(user));
 
-    this.filteredUsers = [...this.users];
-
     const preselectedAssignee = this.route.snapshot.queryParamMap.get('assigneeId');
     if (preselectedAssignee && memberIds.includes(preselectedAssignee)) {
       this.assigneeId = preselectedAssignee;
     }
-  }
-
-  filterUsers(): void {
-    const query = this.assigneeSearch.toLowerCase();
-    this.filteredUsers = this.users.filter(user =>
-      user.name.toLowerCase().includes(query) ||
-      user.email.toLowerCase().includes(query)
-    );
   }
 
   private roleRank(role: UserRole): number {
@@ -111,9 +99,16 @@ export class NewTaskComponent implements OnInit {
     if (this.dueDate) {
       taskData.dueDate = new Date(this.dueDate);
     }
+    const currentProject = this.projectService.getCurrentProject();
 
     this.taskService.createTask(taskData).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => {
+        if (currentProject) {
+          this.router.navigate(['/projects', currentProject.id]);
+        } else {
+          this.router.navigate(['/projects']);
+        }
+      },
       error: (err) => alert('Görev oluşturulamadı: ' + err)
     });
   }

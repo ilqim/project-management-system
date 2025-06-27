@@ -71,6 +71,18 @@ export class EditProjectComponent implements OnInit {
         this.router.navigate(['/projects']);
       });
   }
+  toggleMember(userId: string): void {
+    const idx = this.projectForm.teamMembers.indexOf(userId);
+    if (idx >= 0) {
+      this.projectForm.teamMembers.splice(idx, 1);
+    } else {
+      this.projectForm.teamMembers.push(userId);
+    }
+  }
+
+  isSelected(userId: string): boolean {
+    return this.projectForm.teamMembers.includes(userId);
+  }
 
   cancel(): void {
     this.router.navigate(['/projects']);

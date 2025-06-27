@@ -3,6 +3,7 @@ import { AuthService } from '../../services/auth.service';
 import { WorkspaceService } from '../../services/workspace.service';
 import { StorageService } from '../../services/storage.service';
 import { User } from '../../models/user.model';
+import { Router } from '@angular/router';
 import { Workspace } from '../../models/workspace.model';
 
 @Component({
@@ -18,7 +19,8 @@ export class HeaderComponent implements OnInit {
   constructor(
     private auth: AuthService,
     private workspaceService: WorkspaceService,
-    private storage: StorageService
+    private storage: StorageService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -45,5 +47,9 @@ export class HeaderComponent implements OnInit {
 
   logout(): void {
     this.auth.logout();
+  }
+  
+  goDashboard(): void {
+    this.router.navigate(['/dashboard']);
   }
 }

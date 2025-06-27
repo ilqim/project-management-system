@@ -10,19 +10,10 @@
       <textarea id="description" name="description" [(ngModel)]="description"></textarea>
     </div>
     <div class="form-group">
-      <label for="assigneeSearch">Kişi Ara</label>
-      <input
-        id="assigneeSearch"
-        name="assigneeSearch"
-        [(ngModel)]="assigneeSearch"
-        (input)="filterUsers()"
-        placeholder="Kişi ara..." />
-    </div>
-    <div class="form-group">
       <label for="assignee">Atanan Kişi</label>
       <select id="assignee" name="assignee" [(ngModel)]="assigneeId">
         <option [ngValue]="null">Seçiniz</option>
-        <option *ngFor="let user of filteredUsers" [ngValue]="user.id">
+        <option *ngFor="let user of users" [ngValue]="user.id">
           {{ user.name }} ({{ user.email }})
         </option>
       </select>
