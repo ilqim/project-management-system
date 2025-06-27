@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { User, UserRole } from '../../models/user.model';
 import { ProjectService } from '../../services/project.service';
 import { TaskService } from '../../services/task.service';
+import { Project } from '../../models/project.model';
 
 interface StatsData {
   activeProjects: number;
@@ -99,6 +100,8 @@ export class DashboardComponent implements OnInit {
     }
   ];
 
+  upcomingProjects: Project[] = [];
+
   constructor(
     private router: Router,
     private auth: AuthService,
@@ -151,6 +154,29 @@ export class DashboardComponent implements OnInit {
       alert('Yeni proje oluşturma sayfası henüz hazır değil. Geliştirme aşamasında...');
     }
   }
+
+  private loadUpcomingProjects(): void {
+    this.projectService.getProjects().subscribe(projects => {
+      const now = new Date();
+      this.upcomingProjects = projects
+        .filter(p => {
+          const end = this.getProjectEndDate(p);
+          return end && end > now;
+        })
+        .sort((a, b) => {
+          const aDate = this.getProjectEndDate(a) as Date;
+          const bDate = this.getProjectEndDate(b) as Date;
+          return aDate.getTime() - bDate.getTime();
+        })
+        .slice(0, 3);
+    });
+  }
+
+  getProjectEndDate(project: Project): Date | null {
+    const date = project.endDate || project.dueDate;
+    return date ? new Date(date) : null;
+  }
+
   viewInvites(): void {
     this.router.navigate(['/invites']).catch(error => {
       console.warn('Route not found:', error);

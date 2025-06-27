@@ -15,6 +15,16 @@
           <span *ngIf="task.assigneeId">Atanan: {{ getUserName(task.assigneeId) }}</span>
         </div>
         <p class="description">{{ task.description }}</p>
+        <div class="task-dates">
+          <span>
+            <i class="fas fa-calendar-plus"></i>
+            {{ task.createdAt | date:'shortDate' }}
+          </span>
+          <span *ngIf="task.dueDate">
+            <i class="fas fa-calendar-check"></i>
+            {{ task.dueDate | date:'shortDate' }}
+          </span>
+        </div>
       </li>
     </ul>
 
@@ -28,6 +38,16 @@
           <span class="project">({{ getProjectName(task.projectId) }})</span>
         </div>
         <p class="description">{{ task.description }}</p>
+        <div class="task-dates">
+          <span>
+            <i class="fas fa-calendar-plus"></i>
+            {{ task.createdAt | date:'shortDate' }}
+          </span>
+          <span *ngIf="task.dueDate">
+            <i class="fas fa-calendar-check"></i>
+            {{ task.dueDate | date:'shortDate' }}
+          </span>
+        </div>
       </li>
     </ul>
   </ng-container>
@@ -49,6 +69,16 @@
           </span>
         </div>
         <p class="description">{{ task.description }}</p>
+        <div class="task-dates">
+          <span>
+            <i class="fas fa-calendar-plus"></i>
+            {{ task.createdAt | date:'shortDate' }}
+          </span>
+          <span *ngIf="task.dueDate">
+            <i class="fas fa-calendar-check"></i>
+            {{ task.dueDate | date:'shortDate' }}
+          </span>
+        </div>
       </li>
     </ul>
   </ng-container>

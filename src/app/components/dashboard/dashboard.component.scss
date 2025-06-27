@@ -308,6 +308,78 @@
   }
 }
 
+.upcoming-projects-section {
+  .task-list {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    min-height: 300px;
+  }
+
+  .task-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.2s ease;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: rgba(102, 126, 234, 0.05);
+      border-radius: 8px;
+      margin: 0 -0.5rem;
+      padding: 1.5rem 0.5rem;
+    }
+
+    .task-content {
+      flex: 1;
+
+      .task-title {
+        color: #2d3748;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        font-size: 1.1rem;
+      }
+
+      .task-description {
+        color: #718096;
+        margin: 0 0 1rem 0;
+        line-height: 1.4;
+      }
+
+      .task-meta {
+        display: flex;
+        gap: 1.5rem;
+        font-size: 0.875rem;
+        color: #a0aec0;
+
+        span {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+
+          i {
+            font-size: 0.75rem;
+          }
+        }
+      }
+    }
+  }
+
+  .no-tasks {
+    text-align: center;
+    color: #718096;
+    padding: 2rem;
+    font-style: italic;
+  }
+}
+
+
 // Quick Actions
 .quick-actions-section {
   .quick-actions {

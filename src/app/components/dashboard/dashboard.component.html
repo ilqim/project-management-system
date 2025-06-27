@@ -84,6 +84,29 @@
         </div>
       </section>
 
+      <!-- Yaklaşan Projeler -->
+      <section class="upcoming-projects-section">
+        <h2 class="section-title">Yaklaşan Projeler</h2>
+        <div class="task-list">
+          <div class="task-item" *ngFor="let project of upcomingProjects">
+            <div class="task-content">
+              <h4 class="task-title">{{ project.name }}</h4>
+              <p class="task-description">{{ project.description }}</p>
+              <div class="task-meta">
+                <span class="task-date" *ngIf="getProjectEndDate(project)">
+                  <i class="fas fa-calendar"></i>
+                  {{ getProjectEndDate(project) | date:'shortDate' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="no-tasks" *ngIf="upcomingProjects.length === 0">
+            <p>Yaklaşan proje bulunmamaktadır.</p>
+          </div>
+        </div>
+      </section>
+
       <!-- Yaklaşan Görevler -->
       <section class="upcoming-section">
         <h2 class="section-title">Yaklaşan Görevler</h2>
