@@ -321,6 +321,14 @@ export class ProjectService {
         });
     }
 
+    getInvitesForProject(projectId: string): Observable<ProjectInvite[]> {
+        return new Observable(observer => {
+            const invites = this.storage.get<ProjectInvite[]>('projectInvites') || [];
+            observer.next(invites.filter(i => i.projectId === projectId));
+            observer.complete();
+        });
+    }
+
 
     acceptInvite(token: string, userId: string): Observable<boolean> {
         return new Observable(observer => {

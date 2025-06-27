@@ -9,4 +9,22 @@
 
 input, textarea, select {
   width: 100%;
+  }
+
+.member-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.member-item {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.member-item.selected {
+  background-color: #cce5ff;
 }

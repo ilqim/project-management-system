@@ -29,19 +29,41 @@ export class NewProjectComponent implements OnInit {
       .filter(u => u.role !== UserRole.VIEWER);
   }
 
+  toggleMember(userId: string): void {
+    const idx = this.teamMembers.indexOf(userId);
+    if (idx >= 0) {
+      this.teamMembers.splice(idx, 1);
+    } else {
+      this.teamMembers.push(userId);
+    }
+  }
+
+  isSelected(userId: string): boolean {
+    return this.teamMembers.includes(userId);
+  }
+
   createProject(): void {
     if (!this.name.trim()) {
       return;
     }
+    const selected = [...this.teamMembers];
     this.projectService
       .createProject(this.name, this.description, {
         name: this.name,
         description: this.description,
         startDate: this.startDate,
         endDate: this.endDate,
-        teamMembers: this.teamMembers
+        teamMembers: []
       })
-      .subscribe(() => {
+      .subscribe(project => {
+        selected.forEach(id => {
+          const user = this.authService.getUserById(id);
+          if (project && user) {
+            this.projectService
+              .inviteUser(project.id, user.email, user.role)
+              .subscribe();
+          }
+        });
         this.router.navigate(['/projects']);
       });
   }

@@ -29,6 +29,15 @@
     </div>
   </section>
 
+  <div class="invites" *ngIf="pendingInvites.length">
+      <h3>Bekleyen Davetler</h3>
+      <ul>
+        <li *ngFor="let invite of pendingInvites">
+          {{ invite.email }} - Davet Edildi
+        </li>
+      </ul>
+    </div>
+
   <section class="actions" *ngIf="canManage()">
     <button class="btn" (click)="editProject()">Projeyi Düzenle</button>
     <button class="btn" (click)="manageTeam()">Takım Yönetimi</button>

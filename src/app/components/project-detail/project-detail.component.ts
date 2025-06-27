@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Project } from '../../models/project.model';
+import { Project, ProjectInvite, InviteStatus } from '../../models/project.model';
 import { ProjectService } from '../../services/project.service';
 import { AuthService } from '../../services/auth.service';
 import { User, UserRole } from '../../models/user.model';
@@ -18,6 +18,7 @@ export class ProjectDetailComponent implements OnInit {
     currentUser: User | null = null;
     UserRole = UserRole;
     memberTasks: { [memberId: string]: Task[] } = {};
+    pendingInvites: ProjectInvite[] = [];
 
     constructor(
         private route: ActivatedRoute,
@@ -71,6 +72,7 @@ export class ProjectDetailComponent implements OnInit {
                 if (project) {
                     this.projectService.setCurrentProject(project.id);
                     this.loadMemberTasks(project.id);
+                    this.loadInvites(project.id);
                 }
                 this.loading = false;
             },
@@ -99,6 +101,12 @@ export class ProjectDetailComponent implements OnInit {
     getMemberName(id: string): string {
         const user = this.auth.getUserById(id);
         return user ? user.name : id;
+    }
+    
+    loadInvites(projectId: string): void {
+        this.projectService.getInvitesForProject(projectId).subscribe(invites => {
+            this.pendingInvites = invites.filter(i => i.status === InviteStatus.PENDING);
+        });
     }
 
     goBack(): void {
