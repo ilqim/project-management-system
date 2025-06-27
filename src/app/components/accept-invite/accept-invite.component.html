@@ -1,5 +1,18 @@
 <div class="accept-invite">
-  <h2>Proje Daveti</h2>
-  <p>Davet kodu kaydedildi. Daveti kabul etmek için giriş yapın.</p>
-  <button class="btn" (click)="gotoLogin()">Giriş Yap</button>
+  <ng-container *ngIf="token; else inviteList">
+    <h2>Proje Daveti</h2>
+    <p>Davet kodu kaydedildi. Daveti kabul etmek için giriş yapın.</p>
+    <button class="btn" (click)="gotoLogin()">Giriş Yap</button>
+  </ng-container>
+  <ng-template #inviteList>
+    <h2>Takım Davetleri</h2>
+    <p *ngIf="invites.length === 0">Bekleyen davetiniz bulunmuyor.</p>
+    <ul *ngIf="invites.length > 0">
+      <li *ngFor="let invite of invites">
+        {{ invite.projectId }} - {{ invite.role }}
+        <button (click)="accept(invite)">Kabul Et</button>
+        <button (click)="decline(invite)">Reddet</button>
+      </li>
+    </ul>
+  </ng-template>
 </div>

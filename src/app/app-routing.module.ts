@@ -24,6 +24,7 @@ const routes: Routes = [
   { path: 'workspaces', component: WorkspaceSelectorComponent, canActivate: [AuthGuard] },
   { path: 'projects', component: ProjectListComponent, canActivate: [AuthGuard] },
   { path: 'invite/:token', component: AcceptInviteComponent },
+  { path: 'invites', component: AcceptInviteComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.PROJECT_LEAD, UserRole.DEVELOPER] } },
   { path: 'projects/edit/:id', component: EditProjectComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD] } },
   { path: 'projects/new', component: NewProjectComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD] } },
   { path: 'tasks/new', component: NewTaskComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD] } },

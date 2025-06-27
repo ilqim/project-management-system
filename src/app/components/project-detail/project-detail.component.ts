@@ -45,13 +45,12 @@ export class ProjectDetailComponent implements OnInit {
 
     manageTeam(): void {
         if (!this.project) return;
-        this.router.navigate(['/team/manage']);
+        this.router.navigate(['/team/invite']);
     }
 
     editProject(): void {
         if (!this.project) return;
-        // There is no dedicated edit page yet, navigate to new-project as a placeholder
-        this.router.navigate(['/projects/new']);
+        this.router.navigate(['/projects/edit', this.project.id]);
     }
 
     assignTask(userId: string): void {

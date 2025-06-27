@@ -97,7 +97,7 @@ export class ProjectListComponent implements OnInit {
     }
     this.selectedProject = project;
     this.action = 'cancel';
-    this.confirmMessage = `"${project.name}" projesini iptal etmek istediğinizden emin misiniz?`;
+    this.confirmMessage = `"${project.name}" projesini silmek istediğinizden emin misiniz?`;
     this.confirmVisible = true;
   }
 
@@ -205,8 +205,7 @@ export class ProjectListComponent implements OnInit {
       'active': 'Aktif',
       'completed': 'Tamamlandı',
       'paused': 'Durdurulmuş',
-      'planning': 'Planlama',
-      'cancelled': 'İptal Edilmiş'
+      'planning': 'Planlama'
     };
     return statusMap[status] || status;
   }
@@ -218,15 +217,15 @@ export class ProjectListComponent implements OnInit {
     }
     
     if (this.action === 'cancel') {
-      this.projectService.cancelProject(this.selectedProject.id).subscribe({
-        next: (updated) => {
-          this.selectedProject!.status = updated.status;
+      this.projectService.deleteProject(this.selectedProject.id).subscribe({
+        next: () => {
+          this.projects = this.projects.filter(p => p.id !== this.selectedProject!.id);
           this.applyFilters();
           this.resetDialog();
         },
         error: (error) => {
-          console.error('Proje iptal edilirken hata oluştu:', error);
-          alert('Proje iptal edilirken bir hata oluştu.');
+          console.error('Proje silinirken hata oluştu:', error);
+          alert('Proje silinirken bir hata oluştu.');
           this.resetDialog();
         }
       });

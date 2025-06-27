@@ -140,6 +140,13 @@
             <i class="fas fa-user-plus"></i>
             Takım Davet Et
           </button>
+          <button class="action-btn secondary"
+                  *ngIf="currentUser?.role === UserRole.PROJECT_LEAD || currentUser?.role === UserRole.DEVELOPER"
+                  (click)="viewInvites()"
+                  title="Davetleri Gör">
+            <i class="fas fa-envelope"></i>
+            Davetler
+          </button>
           <button class="action-btn info"
                   *ngIf="currentUser?.role === UserRole.ADMIN"
                   (click)="viewReports()"

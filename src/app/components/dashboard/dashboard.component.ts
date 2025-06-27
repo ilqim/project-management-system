@@ -151,6 +151,12 @@ export class DashboardComponent implements OnInit {
       alert('Yeni proje oluşturma sayfası henüz hazır değil. Geliştirme aşamasında...');
     }
   }
+  viewInvites(): void {
+    this.router.navigate(['/invites']).catch(error => {
+      console.warn('Route not found:', error);
+      alert('Davetler sayfası henüz hazır değil.');
+    });
+  }
 
   addNewTask(): void {
     console.log('Adding new task...');
