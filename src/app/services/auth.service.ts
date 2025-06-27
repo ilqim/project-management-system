@@ -171,59 +171,31 @@ export class AuthService {
   }
 
   private initializeDemoData(): void {
-    // Demo workspace'leri oluştur
-    const workspaces = [
-      {
-        id: 'workspace-1',
-        name: 'Tech Company A',
-        description: 'Main development workspace',
-        createdAt: new Date('2024-01-01')
-      },
-      {
-        id: 'workspace-2',
-        name: 'Startup B',
-        description: 'Innovative solutions workspace',
-        createdAt: new Date('2024-01-15')
-      }
-    ];
+    // Demo kullanıcılarını sakla
+    if (!this.storage.get('demoUsers')) {
+      this.storage.set('demoUsers', this.demoUsers);
+    }
 
-    // Demo projeleri oluştur
-    const projects = [
-      {
-        id: 'project-1',
-        name: 'E-Commerce Platform',
-        description: 'Modern online shopping platform',
-        workspaceId: 'workspace-1',
-        status: 'active',
-        createdAt: new Date('2024-02-01')
-      },
-      {
-        id: 'project-2',
-        name: 'Mobile App',
-        description: 'Cross-platform mobile application',
-        workspaceId: 'workspace-1',
-        status: 'active',
-        createdAt: new Date('2024-02-15')
-      },
-      {
-        id: 'project-3',
-        name: 'Data Analytics Tool',
-        description: 'Business intelligence dashboard',
-        workspaceId: 'workspace-2',
-        status: 'planning',
-        createdAt: new Date('2024-03-01')
-      }
-    ];
-
-    // İlk kez çalıştırıldığında demo verileri kaydet
+    // Varsayılan çalışma alanı oluşturulmadıysa ekle
     if (!this.storage.get('workspaces')) {
-      this.storage.set('workspaces', workspaces);
+      const defaultWorkspaces = [
+        {
+          id: 'workspace-1',
+          name: 'Default Workspace',
+          description: 'Initial workspace',
+          createdAt: new Date()
+        }
+      ];
+      this.storage.set('workspaces', defaultWorkspaces);
     }
     if (!this.storage.get('projects')) {
-      this.storage.set('projects', projects);
+      this.storage.set('projects', []);
     }
     if (!this.storage.get('demoUsers')) {
       this.storage.set('demoUsers', this.demoUsers);
+    }
+    if (!this.storage.get('tasks')) {
+      this.storage.set('tasks', []);
     }
   }
 
@@ -241,7 +213,7 @@ export class AuthService {
 
 
   private createDefaultUser(email: string): User {
-    return {
+    const newUser: User = {
       id: this.storage.generateId(),
       email,
       name: email.split('@')[0],
@@ -250,5 +222,10 @@ export class AuthService {
       createdAt: new Date(),
       lastActive: new Date()
     };
+    const users = this.storage.get<User[]>('users') || [];
+    users.push(newUser);
+    this.storage.set('users', users);
+
+    return newUser;
   }
 }
