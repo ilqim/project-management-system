@@ -2,6 +2,19 @@
   padding: 1rem;
 }
 
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+
 .task-list {
   list-style: none;
   padding: 0;
@@ -33,6 +46,20 @@
 .description {
   margin-top: 0.5rem;
   }
+
+  .task-tags {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.task-tags .tag {
+  background: #eef;
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 0.75rem;
+}
 
 .task-dates {
   margin-top: 0.5rem;

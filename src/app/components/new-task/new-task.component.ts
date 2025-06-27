@@ -14,6 +14,7 @@ import { Project } from '../../models/project.model'; // varsa project tipi içi
 export class NewTaskComponent implements OnInit {
   title = '';
   description = '';
+  tagsInput = '';
   assigneeSearch = '';
   assigneeId: string | null = null;
   dueDate: string | null = null;
@@ -98,7 +99,11 @@ export class NewTaskComponent implements OnInit {
 
     const taskData: any = {
       title: this.title,
-      description: this.description
+      description: this.description,
+      tags: this.tagsInput
+        .split(',')
+        .map(t => t.trim())
+        .filter(t => t)
     };
 
     if (this.assigneeId) {

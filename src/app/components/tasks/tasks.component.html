@@ -1,5 +1,21 @@
 <div class="tasks-page">
   <h1>Görevler</h1>
+  <div class="filters">
+    <label>
+      Proje:
+      <select [(ngModel)]="selectedProject" (change)="onProjectChange()">
+        <option value="">Tümü</option>
+        <option *ngFor="let p of projects" [value]="p.id">{{ p.name }}</option>
+      </select>
+    </label>
+    <label>
+      Etiket:
+      <select [(ngModel)]="selectedTag" (change)="onTagChange()">
+        <option value="">Tümü</option>
+        <option *ngFor="let tag of availableTags" [value]="tag">{{ tag }}</option>
+      </select>
+    </label>
+  </div>
   <!-- Section for tasks created/assigned by the project lead -->
   <ng-container *ngIf="currentUser?.role === UserRole.PROJECT_LEAD">
     <h2>Verdiğim Görevler</h2>
@@ -15,6 +31,9 @@
           <span *ngIf="task.assigneeId">Atanan: {{ getUserName(task.assigneeId) }}</span>
         </div>
         <p class="description">{{ task.description }}</p>
+        <div class="task-tags" *ngIf="task.tags && task.tags.length">
+          <span class="tag" *ngFor="let tag of task.tags">{{ tag }}</span>
+        </div>
         <div class="task-dates">
           <span>
             <i class="fas fa-calendar-plus"></i>
@@ -38,6 +57,9 @@
           <span class="project">({{ getProjectName(task.projectId) }})</span>
         </div>
         <p class="description">{{ task.description }}</p>
+        <div class="task-tags" *ngIf="task.tags && task.tags.length">
+          <span class="tag" *ngFor="let tag of task.tags">{{ tag }}</span>
+        </div>
         <div class="task-dates">
           <span>
             <i class="fas fa-calendar-plus"></i>
@@ -69,6 +91,9 @@
           </span>
         </div>
         <p class="description">{{ task.description }}</p>
+        <div class="task-tags" *ngIf="task.tags && task.tags.length">
+          <span class="tag" *ngFor="let tag of task.tags">{{ tag }}</span>
+        </div>
         <div class="task-dates">
           <span>
             <i class="fas fa-calendar-plus"></i>

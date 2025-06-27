@@ -18,6 +18,9 @@ export class TasksComponent implements OnInit {
   myTasks: Task[] = [];
   assignedTasks: Task[] = [];
   projects: Project[] = [];
+  availableTags: string[] = [];
+  selectedTag = '';
+  selectedProject = '';
   UserRole = UserRole;
 
   constructor(
@@ -34,8 +37,10 @@ export class TasksComponent implements OnInit {
   private loadProjectsAndTasks(): void {
     this.projectService.getProjects().subscribe(projects => {
       this.projects = projects;
+      const projectIds = this.projects.map(p => p.id);
       this.taskService.getTasks().subscribe(tasks => {
-        this.tasks = tasks;
+        this.tasks = tasks.filter(t => projectIds.includes(t.projectId));
+        this.updateAvailableTags();
         this.applyRoleFilter();
       });
     });
@@ -51,25 +56,58 @@ export class TasksComponent implements OnInit {
 
     switch (this.currentUser.role) {
       case UserRole.ADMIN:
-        this.filteredTasks = this.tasks;
         this.myTasks = this.tasks;
         this.assignedTasks = this.tasks;
         break;
       case UserRole.PROJECT_LEAD:
         this.assignedTasks = this.tasks.filter(t => t.reporterId === this.currentUser!.id);
         this.myTasks = this.tasks.filter(t => t.assigneeId === this.currentUser!.id);
-        this.filteredTasks = this.assignedTasks;
         break;
       case UserRole.DEVELOPER:
         this.myTasks = this.tasks.filter(t => t.assigneeId === this.currentUser!.id);
-        this.filteredTasks = this.myTasks;
         this.assignedTasks = [];
         break;
       default:
-        this.filteredTasks = [];
         this.myTasks = [];
         this.assignedTasks = [];
     }
+    
+    const baseAssigned = this.applyTagProjectFilter(this.assignedTasks);
+    const baseMy = this.applyTagProjectFilter(this.myTasks);
+
+    if (this.currentUser.role === UserRole.PROJECT_LEAD) {
+      this.assignedTasks = baseAssigned;
+      this.myTasks = baseMy;
+      this.filteredTasks = this.assignedTasks;
+    } else if (this.currentUser.role === UserRole.DEVELOPER) {
+      this.myTasks = baseMy;
+      this.filteredTasks = this.myTasks;
+    } else {
+      this.myTasks = baseMy;
+      this.assignedTasks = baseAssigned;
+      this.filteredTasks = this.applyTagProjectFilter(this.tasks);
+    }
+  }
+
+  onTagChange(): void {
+    this.applyRoleFilter();
+  }
+
+  onProjectChange(): void {
+    this.applyRoleFilter();
+  }
+
+  private applyTagProjectFilter(tasks: Task[]): Task[] {
+    return tasks.filter(t =>
+      (!this.selectedProject || t.projectId === this.selectedProject) &&
+      (!this.selectedTag || t.tags.includes(this.selectedTag))
+    );
+  }
+
+  private updateAvailableTags(): void {
+    const tagSet = new Set<string>();
+    this.tasks.forEach(t => t.tags.forEach(tag => tagSet.add(tag)));
+    this.availableTags = Array.from(tagSet);
   }
   getUserName(userId: string): string {
     const user = this.authService.getUserById(userId);
