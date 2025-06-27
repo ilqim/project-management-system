@@ -46,18 +46,15 @@ export class TeamManagementComponent implements OnInit {
 
   addMember(): void {
     if (!this.project || !this.selectedUserId) return;
-    this.projectService.addMember(this.project.id, this.selectedUserId).subscribe(() => {
-      // update local project reference
-      if (this.project) {
-        if (!this.project.teamMembers) {
-          this.project.teamMembers = [];
-        }
-        this.project.teamMembers.push(this.selectedUserId!);
-        this.project.memberCount = this.project.teamMembers.length;
-      }
-      this.selectedUserId = null;
-      this.refreshAvailable();
-    });
+    const user = this.authService.getUserById(this.selectedUserId);
+    if (!user) return;
+    this.projectService
+      .inviteUser(this.project.id, user.email, user.role)
+      .subscribe(() => {
+        alert('Davet gönderildi');
+        this.selectedUserId = null;
+        this.refreshAvailable();
+      });
   }
 
   private roleRank(role: UserRole): number {

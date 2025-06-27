@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TaskService } from '../../services/task.service';
 import { AuthService } from '../../services/auth.service';
+import { ProjectService } from '../../services/project.service';
 import { User, UserRole } from '../../models/user.model';
 
 @Component({
@@ -30,17 +31,21 @@ export class NewTaskComponent implements OnInit {
     private taskService: TaskService,
     private router: Router,
     private route: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    private projectService: ProjectService
   ) {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
-    this.users = this.authService
-      .getAllUsers()
+    const project = this.projectService.getCurrentProject();
+    const memberIds = project?.teamMembers || [];
+    this.users = memberIds
+      .map(id => this.authService.getUserById(id))
+      .filter((u): u is User => !!u)
       .filter(u => this.canAssignTo(u));
     this.filteredUsers = this.users.slice();
     const preselect = this.route.snapshot.queryParamMap.get('assigneeId');
-    if (preselect && this.users.some(u => u.id === preselect)) {
+    if (preselect && memberIds.includes(preselect)) {
       this.assigneeId = preselect;
     }
   }
