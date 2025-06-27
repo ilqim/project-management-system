@@ -4,7 +4,7 @@ import { Project, ProjectInvite, InviteStatus } from '../../models/project.model
 import { ProjectService } from '../../services/project.service';
 import { AuthService } from '../../services/auth.service';
 import { User, UserRole } from '../../models/user.model';
-import { Task } from '../../models/task.model';
+import { Task, TaskPriority } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
 
 @Component({
@@ -19,6 +19,7 @@ export class ProjectDetailComponent implements OnInit {
     UserRole = UserRole;
     memberTasks: { [memberId: string]: Task[] } = {};
     pendingInvites: ProjectInvite[] = [];
+    expandedMembers: { [memberId: string]: boolean } = {};
 
     constructor(
         private route: ActivatedRoute,
@@ -33,6 +34,10 @@ export class ProjectDetailComponent implements OnInit {
         this.loadProject();
     }
 
+    toggleMemberTasks(memberId: string): void {
+        this.expandedMembers[memberId] = !this.expandedMembers[memberId];
+    }
+
     canManage(): boolean {
         if (!this.currentUser || !this.project) {
             return false;
@@ -42,6 +47,21 @@ export class ProjectDetailComponent implements OnInit {
             (this.currentUser.role === UserRole.PROJECT_LEAD &&
                 this.project.leadId === this.currentUser.id)
         );
+    }
+
+    getPriorityText(priority: TaskPriority): string {
+        switch (priority) {
+            case TaskPriority.LOW:
+                return 'Düşük';
+            case TaskPriority.MEDIUM:
+                return 'Orta';
+            case TaskPriority.HIGH:
+                return 'Yüksek';
+            case TaskPriority.URGENT:
+                return 'Acil';
+            default:
+                return priority;
+        }
     }
 
     manageTeam(): void {
@@ -102,7 +122,7 @@ export class ProjectDetailComponent implements OnInit {
         const user = this.auth.getUserById(id);
         return user ? user.name : id;
     }
-    
+
     loadInvites(projectId: string): void {
         this.projectService.getInvitesForProject(projectId).subscribe(invites => {
             this.pendingInvites = invites.filter(i => i.status === InviteStatus.PENDING);
@@ -111,5 +131,9 @@ export class ProjectDetailComponent implements OnInit {
 
     goBack(): void {
         this.router.navigate(['/projects']);
+    }
+
+    isOverdue(dueDate: Date): boolean {
+        return new Date(dueDate) < new Date();
     }
 }

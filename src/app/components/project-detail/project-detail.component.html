@@ -12,21 +12,40 @@
     <p><strong>İlerleme:</strong> {{ p.progress || 0 }}%</p>
 
     <div class="members" *ngIf="p.teamMembers?.length">
-      <h3>Takım Üyeleri</h3>
-      <ul>
-        <li *ngFor="let id of p.teamMembers">
-          {{ getMemberName(id) }}
-          <button
-            *ngIf="canManage() && id !== currentUser?.id"
-            class="assign-btn"
-            (click)="assignTask(id)"
-          >Görev Ver</button>
-          <ul class="member-tasks" *ngIf="memberTasks[id]?.length">
-            <li *ngFor="let task of memberTasks[id]">{{ task.title }}</li>
-          </ul>
-        </li>
-      </ul>
-    </div>
+  <h3>Takım Üyeleri</h3>
+  <ul>
+    <li *ngFor="let id of p.teamMembers" class="member-item">
+      <div class="member-header" (click)="toggleMemberTasks(id)">
+        <span class="member-name">{{ getMemberName(id) }}</span>
+        <button
+          *ngIf="canManage() && id !== currentUser?.id"
+          class="assign-btn"
+          (click)="assignTask(id); $event.stopPropagation()"
+        >Görev Ver</button>
+        <span class="toggle-arrow" [class.expanded]="expandedMembers[id]">▼</span>
+      </div>
+      <div class="member-tasks" *ngIf="expandedMembers[id] && memberTasks[id]?.length" [@slideDown]>
+        <ul class="task-list">
+          <li *ngFor="let task of memberTasks[id]" class="task-item">
+            <div class="task-content">
+              <span class="task-title">{{ task.title }}</span>
+              <span class="task-priority" [class]="'priority-' + task.priority">{{ getPriorityText(task.priority) }}</span>
+            </div>
+            <div class="task-meta">
+              <span *ngIf="task.dueDate" class="due-date" [class.overdue]="isOverdue(task.dueDate)">
+                Son Tarih: {{ task.dueDate | date:'shortDate' }}
+              </span>
+              <span class="progress">İlerleme: {{ task.progress }}%</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="no-tasks" *ngIf="expandedMembers[id] && !memberTasks[id]?.length">
+        Bu üyeye henüz görev atanmamış.
+      </div>
+    </li>
+  </ul>
+</div>
   </section>
 
   <div class="invites" *ngIf="pendingInvites.length">
