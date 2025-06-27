@@ -89,6 +89,9 @@ export class TaskService {
       tasks.push(task);
       this.storage.set('tasks', tasks);
       this.tasksSubject.next(tasks);
+
+      // update related project stats
+      this.updateProjectStats(currentProject.id);
       
       this.notification.addNotification(`New task "${task.title}" created`, 'success');
       observer.next(task);
@@ -130,6 +133,8 @@ export class TaskService {
       
       this.storage.set('tasks', tasks);
       this.tasksSubject.next(tasks);
+      // update related project stats
+      this.updateProjectStats(tasks[taskIndex].projectId);
       observer.next(tasks[taskIndex]);
       observer.complete();
     });
@@ -150,6 +155,12 @@ export class TaskService {
       
       this.storage.set('tasks', filteredTasks);
       this.tasksSubject.next(filteredTasks);
+
+      
+      if (task) {
+        // update related project stats
+        this.updateProjectStats(task.projectId);
+      }
       
       if (task) {
         this.notification.addNotification(`Task "${task.title}" deleted`, 'warning');
@@ -217,6 +228,13 @@ export class TaskService {
         observer.complete();
       });
     });
+  }
+  private updateProjectStats(projectId: string): void {
+    const allTasks = this.storage.get<Task[]>('tasks') || [];
+    const projectTasks = allTasks.filter(t => t.projectId === projectId);
+    const completed = projectTasks.filter(t => t.progress === 100 || t.completedAt).length;
+    const progress = projectTasks.length > 0 ? Math.round((completed / projectTasks.length) * 100) : 0;
+    this.project.updateProject(projectId, { progress, taskCount: projectTasks.length }).subscribe();
   }
 
   // Comment operations

@@ -62,6 +62,7 @@ export class ProjectListComponent implements OnInit {
     this.loading = true;
     this.taskService.getTasks().subscribe(tasks => {
       const counts: { [pid: string]: number } = {};
+      const completed: { [pid: string]: number } = {};
       tasks.forEach(t => {
         if (!this.currentUser) return;
         if (
@@ -69,16 +70,28 @@ export class ProjectListComponent implements OnInit {
           this.currentUser.role === UserRole.PROJECT_LEAD
         ) {
           counts[t.projectId] = (counts[t.projectId] || 0) + 1;
+          if (t.progress === 100 || t.completedAt) {
+            completed[t.projectId] = (completed[t.projectId] || 0) + 1;
+          }
         } else if (
           this.currentUser.role === UserRole.DEVELOPER &&
           t.assigneeId === this.currentUser.id
         ) {
           counts[t.projectId] = (counts[t.projectId] || 0) + 1;
+          if (t.progress === 100 || t.completedAt) {
+            completed[t.projectId] = (completed[t.projectId] || 0) + 1;
+          }
         }
       });
       this.projectService.getProjects().subscribe({
         next: projects => {
-          this.projects = projects.map(p => ({ ...p, taskCount: counts[p.id] || 0 }));
+          const projectsWithStats = projects.map(p => {
+            const total = counts[p.id] || 0;
+            const done = completed[p.id] || 0;
+            const progress = total > 0 ? Math.round((done / total) * 100) : 0;
+            return { ...p, taskCount: total, progress };
+          });
+          this.projects = projectsWithStats;
           this.taskCounts = counts;
           this.applyFilters();
           this.loading = false;
