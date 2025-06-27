@@ -292,6 +292,19 @@ export class ProjectService {
                 return;
             }
 
+            const invites = this.storage.get<ProjectInvite[]>('projectInvites') || [];
+
+            const existing = invites.find(i =>
+                i.projectId === projectId &&
+                i.email === email &&
+                i.status === InviteStatus.PENDING
+            );
+
+            if (existing) {
+                observer.error('User already invited');
+                return;
+            }
+
             const invite: ProjectInvite = {
                 id: this.storage.generateId(),
                 projectId,
@@ -303,7 +316,6 @@ export class ProjectService {
                 token: this.storage.generateId()
             };
 
-            const invites = this.storage.get<ProjectInvite[]>('projectInvites') || [];
             invites.push(invite);
             this.storage.set('projectInvites', invites);
 

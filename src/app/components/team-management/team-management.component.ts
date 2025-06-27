@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Project } from '../../models/project.model';
+import { Project, ProjectInvite, InviteStatus } from '../../models/project.model';
 import { User, UserRole } from '../../models/user.model';
 import { ProjectService } from '../../services/project.service';
 import { AuthService } from '../../services/auth.service';
@@ -16,6 +16,7 @@ export class TeamManagementComponent implements OnInit {
   availableUsers: User[] = [];
   selectedUserId: string | null = null;
   currentUser: User | null = null;
+  pendingInvites: ProjectInvite[] = [];
   private roleHierarchy = [
     UserRole.VIEWER,
     UserRole.DEVELOPER,
@@ -33,14 +34,24 @@ export class TeamManagementComponent implements OnInit {
     this.currentUser = this.authService.getCurrentUser();
     this.project = this.projectService.getCurrentProject();
     this.allUsers = this.authService.getAllUsers();
-    this.refreshAvailable();
+    if (this.project) {
+      this.projectService
+        .getInvitesForProject(this.project.id)
+        .subscribe(invites => {
+          this.pendingInvites = invites.filter(i => i.status === InviteStatus.PENDING);
+          this.refreshAvailable();
+        });
+    } else {
+      this.refreshAvailable();
+    }
   }
 
   refreshAvailable(): void {
     if (!this.project) return;
     const current = this.project.teamMembers || [];
+    const invitedEmails = this.pendingInvites.map(i => i.email);
     this.availableUsers = this.allUsers.filter(
-      u => !current.includes(u.id) && this.canAddToTeam(u) && u.role !== UserRole.VIEWER
+      u => !current.includes(u.id) && !invitedEmails.includes(u.email) && this.canAddToTeam(u) && u.role !== UserRole.VIEWER
     );
   }
 
@@ -50,10 +61,18 @@ export class TeamManagementComponent implements OnInit {
     if (!user) return;
     this.projectService
       .inviteUser(this.project.id, user.email, user.role)
-      .subscribe(() => {
-        alert('Davet gönderildi');
-        this.selectedUserId = null;
-        this.refreshAvailable();
+      .subscribe({
+        next: () => {
+          alert('Davet gönderildi');
+          this.selectedUserId = null;
+          this.projectService
+            .getInvitesForProject(this.project!.id)
+            .subscribe(invites => {
+              this.pendingInvites = invites.filter(i => i.status === InviteStatus.PENDING);
+              this.refreshAvailable();
+            });
+        },
+        error: () => alert('Bu kullanıcı zaten davet edilmiş')
       });
   }
 

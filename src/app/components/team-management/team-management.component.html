@@ -8,6 +8,13 @@
     </ul>
   </div>
 
+  <div class="pending-invites" *ngIf="pendingInvites.length">
+    <h3>Davet Gönderilen Üyeler</h3>
+    <ul>
+      <li *ngFor="let invite of pendingInvites">{{ invite.email }}</li>
+    </ul>
+  </div>
+
   <div class="add-member">
     <select [(ngModel)]="selectedUserId">
       <option [ngValue]="null">Kullanıcı Seçin</option>
