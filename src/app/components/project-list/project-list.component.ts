@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { AuthService } from '../../services/auth.service';
 import { Project } from '../../models/project.model';
 import { User, UserRole } from '../../models/user.model';
 import { TaskService } from '../../services/task.service';
+import { StorageService } from '../../services/storage.service';
+import { Subscription } from 'rxjs';
 
 interface ProjectForm {
   name: string;
@@ -18,7 +20,7 @@ interface ProjectForm {
   templateUrl: './project-list.component.html',
   styleUrls: ['./project-list.component.scss']
 })
-export class ProjectListComponent implements OnInit {
+export class ProjectListComponent implements OnInit, OnDestroy {
   projects: Project[] = [];
   filteredProjects: Project[] = [];
   searchTerm = '';
@@ -46,16 +48,29 @@ export class ProjectListComponent implements OnInit {
   selectedProject: Project | null = null;
   UserRole = UserRole;
 
+  private subs: Subscription[] = [];
+
   constructor(
     private projectService: ProjectService,
     private router: Router,
     private authService: AuthService,
-    private taskService: TaskService
+    private taskService: TaskService,
+    private storage: StorageService
   ) {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
     this.loadProjects();
+    const sub = this.storage.storageChange$.subscribe(key => {
+      if (key === 'projects') {
+        this.loadProjects();
+      }
+    });
+    this.subs.push(sub);
+  }
+
+  ngOnDestroy(): void {
+    this.subs.forEach(s => s.unsubscribe());
   }
 
   loadProjects(): void {

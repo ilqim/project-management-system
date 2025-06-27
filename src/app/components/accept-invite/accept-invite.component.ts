@@ -3,8 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { StorageService } from '../../services/storage.service';
 import { ProjectService } from '../../services/project.service';
 import { AuthService } from '../../services/auth.service';
-import { ProjectInvite, InviteStatus } from '../../models/project.model';
+import { ProjectInvite, InviteStatus, Project } from '../../models/project.model';
 import { User } from '../../models/user.model';
+
+interface InviteDetails extends ProjectInvite {
+  project?: Project | null;
+  invitedByUser?: User | null;
+}
 
 @Component({
   selector: 'app-accept-invite',
@@ -13,7 +18,7 @@ import { User } from '../../models/user.model';
 })
 export class AcceptInviteComponent implements OnInit {
   token = '';
-  invites: ProjectInvite[] = [];
+  invites: InviteDetails[] = [];
   currentUser: User | null = null;
 
   constructor(
@@ -34,7 +39,8 @@ export class AcceptInviteComponent implements OnInit {
         this.projectService
           .getInvitesForEmail(this.currentUser.email)
           .subscribe(invites => {
-            this.invites = invites.filter(i => i.status === InviteStatus.PENDING);
+            const pending = invites.filter(i => i.status === InviteStatus.PENDING);
+            this.invites = this.enrichInvites(pending);
           });
       }
     }
@@ -44,7 +50,7 @@ export class AcceptInviteComponent implements OnInit {
     this.router.navigate(['/login']);
   }
   
-  accept(invite: ProjectInvite): void {
+  accept(invite: InviteDetails): void {
     if (!this.currentUser) return;
     this.projectService
       .acceptInvite(invite.token, this.currentUser.id)
@@ -53,9 +59,23 @@ export class AcceptInviteComponent implements OnInit {
       });
   }
 
-  decline(invite: ProjectInvite): void {
+  decline(invite: InviteDetails): void {
     this.projectService.declineInvite(invite.token).subscribe(() => {
       this.invites = this.invites.filter(i => i.id !== invite.id);
     });
+  }
+  
+  private enrichInvites(invites: ProjectInvite[]): InviteDetails[] {
+    return invites
+      .map(invite => {
+        const projects = this.storage.get<Project[]>('projects') || [];
+        const project = projects.find(p => p.id === invite.projectId) || null;
+        if (!project) {
+          return null;
+        }
+        const invitedByUser = this.auth.getUserById(invite.invitedBy) || null;
+        return { ...invite, project, invitedByUser } as InviteDetails;
+      })
+      .filter((i): i is InviteDetails => i !== null);
   }
 }

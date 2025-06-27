@@ -1,4 +1,24 @@
 .accept-invite {
   text-align: center;
   margin-top: 2rem;
+  }
+
+.invite-card {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.invite-card h3 {
+  margin-top: 0;
+}
+
+.invite-card .actions {
+  margin-top: 0.5rem;
+}
+
+.invite-card button {
+  margin-right: 0.5rem;
 }

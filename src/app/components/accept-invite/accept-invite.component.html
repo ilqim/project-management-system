@@ -8,10 +8,16 @@
     <h2>Takım Davetleri</h2>
     <p *ngIf="invites.length === 0">Bekleyen davetiniz bulunmuyor.</p>
     <ul *ngIf="invites.length > 0">
-      <li *ngFor="let invite of invites">
-        {{ invite.projectId }} - {{ invite.role }}
-        <button (click)="accept(invite)">Kabul Et</button>
-        <button (click)="decline(invite)">Reddet</button>
+      <li class="invite-card" *ngFor="let invite of invites">
+        <h3>{{ invite.project?.name }}</h3>
+        <p>{{ invite.project?.description }}</p>
+        <p *ngIf="invite.project?.endDate">Bitiş Tarihi: {{ invite.project?.endDate | date:'mediumDate' }}</p>
+        <p>Davet Eden: {{ invite.invitedByUser?.name }}</p>
+        <span class="role">Rol: {{ invite.role }}</span>
+        <div class="actions">
+          <button (click)="accept(invite)">Kabul Et</button>
+          <button (click)="decline(invite)">Reddet</button>
+        </div>
       </li>
     </ul>
   </ng-template>

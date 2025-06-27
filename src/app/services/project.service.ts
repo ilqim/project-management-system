@@ -172,6 +172,11 @@ export class ProjectService {
             const filteredTasks = tasks.filter(t => t.projectId !== projectId);
             this.storage.set('tasks', filteredTasks);
 
+            // Remove related invites
+            const invites = this.storage.get<ProjectInvite[]>('projectInvites') || [];
+            const filteredInvites = invites.filter(i => i.projectId !== projectId);
+            this.storage.set('projectInvites', filteredInvites);
+
             observer.next(true);
             observer.complete();
         });
