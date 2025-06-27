@@ -4,6 +4,7 @@ import { TaskService } from '../../services/task.service';
 import { AuthService } from '../../services/auth.service';
 import { ProjectService } from '../../services/project.service';
 import { User, UserRole } from '../../models/user.model';
+import { Project } from '../../models/project.model'; // varsa project tipi için
 
 @Component({
   selector: 'app-new-task',
@@ -16,16 +17,17 @@ export class NewTaskComponent implements OnInit {
   assigneeSearch = '';
   assigneeId: string | null = null;
   dueDate: string | null = null;
+
   users: User[] = [];
   filteredUsers: User[] = [];
   currentUser: User | null = null;
+
   private roleHierarchy = [
     UserRole.VIEWER,
     UserRole.DEVELOPER,
     UserRole.PROJECT_LEAD,
     UserRole.ADMIN
   ];
-
 
   constructor(
     private taskService: TaskService,
@@ -37,53 +39,80 @@ export class NewTaskComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
-    const project = this.projectService.getCurrentProject();
-    const memberIds = project?.teamMembers || [];
+    const routeProjectId = this.route.snapshot.queryParamMap.get('projectId');
+    const currentProject = this.projectService.getCurrentProject();
+
+    if (!currentProject && routeProjectId) {
+      this.projectService.getProject(routeProjectId).subscribe(p => {
+        if (p) {
+          this.projectService.setCurrentProject(p.id);
+          this.initializeUsers(p);
+        } else {
+          alert('Proje bulunamadı');
+          this.router.navigate(['/projects']);
+        }
+      });
+    } else if (currentProject) {
+      this.initializeUsers(currentProject);
+    } else {
+      alert('Önce bir proje seçmelisiniz');
+      this.router.navigate(['/projects']);
+    }
+  }
+
+  private initializeUsers(project: Project): void {
+    const memberIds = project.teamMembers || [];
     this.users = memberIds
-      .map(id => this.authService.getUserById(id))
-      .filter((u): u is User => !!u)
-      .filter(u => this.canAssignTo(u));
-    this.filteredUsers = this.users.slice();
-    const preselect = this.route.snapshot.queryParamMap.get('assigneeId');
-    if (preselect && memberIds.includes(preselect)) {
-      this.assigneeId = preselect;
+      .map((id: string) => this.authService.getUserById(id))
+      .filter((u: User | undefined): u is User => !!u)
+      .filter(user => this.canAssignTo(user));
+
+    this.filteredUsers = [...this.users];
+
+    const preselectedAssignee = this.route.snapshot.queryParamMap.get('assigneeId');
+    if (preselectedAssignee && memberIds.includes(preselectedAssignee)) {
+      this.assigneeId = preselectedAssignee;
     }
   }
 
   filterUsers(): void {
     const query = this.assigneeSearch.toLowerCase();
-    this.filteredUsers = this.users.filter(u =>
-      u.name.toLowerCase().includes(query) || u.email.toLowerCase().includes(query)
+    this.filteredUsers = this.users.filter(user =>
+      user.name.toLowerCase().includes(query) ||
+      user.email.toLowerCase().includes(query)
     );
   }
+
   private roleRank(role: UserRole): number {
     return this.roleHierarchy.indexOf(role);
   }
 
   private canAssignTo(user: User): boolean {
     if (!this.currentUser) return false;
-    if (user.role === UserRole.VIEWER) {
-      return false;
-    }
+    if (user.role === UserRole.VIEWER) return false;
     return this.roleRank(user.role) <= this.roleRank(this.currentUser.role);
   }
 
-
   createTask(): void {
-    if (!this.title.trim()) {
-      return;
-    }
-    const taskData: any = { title: this.title, description: this.description };
+    if (!this.title.trim()) return;
+
+    const taskData: any = {
+      title: this.title,
+      description: this.description
+    };
+
     if (this.assigneeId) {
       taskData.assigneeId = this.assigneeId;
     }
+
     if (this.dueDate) {
       taskData.dueDate = new Date(this.dueDate);
     }
-    this.taskService.createTask(taskData)
-      .subscribe(() => {
-        this.router.navigate(['/dashboard']);
-      });
+
+    this.taskService.createTask(taskData).subscribe({
+      next: () => this.router.navigate(['/dashboard']),
+      error: (err) => alert('Görev oluşturulamadı: ' + err)
+    });
   }
 
   cancel(): void {

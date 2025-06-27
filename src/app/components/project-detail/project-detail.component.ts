@@ -75,7 +75,10 @@ export class ProjectDetailComponent implements OnInit {
     }
 
     assignTask(userId: string): void {
-        this.router.navigate(['/tasks/new'], { queryParams: { assigneeId: userId } });
+        if (!this.project) return;
+        this.router.navigate(['/tasks/new'], {
+            queryParams: { assigneeId: userId, projectId: this.project.id }
+        });
     }
 
 
