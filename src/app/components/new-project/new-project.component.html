@@ -9,6 +9,22 @@
       <label for="description">Açıklama</label>
       <textarea id="description" name="description" [(ngModel)]="description"></textarea>
     </div>
+    <div class="form-group">
+      <label for="startDate">Başlangıç</label>
+      <input id="startDate" name="startDate" type="date" [(ngModel)]="startDate" />
+    </div>
+    <div class="form-group">
+      <label for="endDate">Tahmini Bitiş</label>
+      <input id="endDate" name="endDate" type="date" [(ngModel)]="endDate" />
+    </div>
+    <div class="form-group">
+      <label for="teamMembers">Proje Ekibi</label>
+      <select id="teamMembers" name="teamMembers" multiple [(ngModel)]="teamMembers">
+        <option *ngFor="let user of allUsers" [value]="user.id">
+          {{ user.name }} ({{ user.role }})
+        </option>
+      </select>
+    </div>
     <button type="submit" class="btn btn-primary">Oluştur</button>
     <button type="button" class="btn" (click)="cancel()">İptal</button>
   </form>

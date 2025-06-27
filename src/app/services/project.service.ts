@@ -80,7 +80,7 @@ export class ProjectService {
                 observer.error('User not authenticated');
                 return;
             }
-
+            const memberIds = Array.from(new Set([user.id, ...(projectData.teamMembers || [])]));
             const project: Project = {
                 id: this.storage.generateId(),
                 name: projectData.name || 'New Project',
@@ -88,8 +88,11 @@ export class ProjectService {
                 status: projectData.status || 'active',
                 ownerId: user.id,
                 leadId: projectData.leadId || user.id,
-                members: [{ id: user.id, name: user.name, role: 'owner' }],
-                teamMembers: [user.id],
+                members: memberIds.map(id => {
+                    const u = this.auth.getUserById(id);
+                    return { id, name: u ? u.name : id, role: id === user.id ? 'owner' : 'member' };
+                }),
+                teamMembers: memberIds,
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 startDate: projectData.startDate || new Date(),
@@ -98,7 +101,7 @@ export class ProjectService {
                 kanbanColumns: projectData.kanbanColumns || this.getDefaultColumns(),
                 progress: 0,
                 taskCount: 0,
-                memberCount: 1,
+                memberCount: Array.from(new Set([user.id, ...(projectData.teamMembers || [])])).length,
                 settings: {
                     allowComments: true,
                     trackTime: true,

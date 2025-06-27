@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ProjectService } from '../../services/project.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +17,9 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private projectService: ProjectService,
+    private storage: StorageService
   ) {}
 
   ngOnInit(): void {
@@ -38,6 +42,14 @@ export class LoginComponent implements OnInit {
       next: (success) => {
         this.isLoading = false;
         if (success) {
+          const token = this.storage.get<string>('pendingInvite');
+          const current = this.auth.getCurrentUser();
+          if (token && current) {
+            this.projectService.acceptInvite(token, current.id).subscribe({
+              next: () => this.storage.remove('pendingInvite'),
+              error: err => console.error(err)
+            });
+          }
           this.router.navigate(['/dashboard']);
         } else {
           this.error = 'Invalid credentials';

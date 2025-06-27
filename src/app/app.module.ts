@@ -25,6 +25,8 @@ import { RoleGuard } from './guards/role.guard';
 import { TasksComponent } from './components/tasks/tasks.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { TeamManagementComponent } from './components/team-management/team-management.component';
+import { EditProjectComponent } from './components/edit-project/edit-project.component';
+import { AcceptInviteComponent } from './components/accept-invite/accept-invite.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +45,8 @@ import { TeamManagementComponent } from './components/team-management/team-manag
     TeamManagementComponent,
     NewProjectComponent,
     NewTaskComponent,
+    EditProjectComponent,
+    AcceptInviteComponent,
     TasksComponent,
     InviteTeamComponent,
     ReportsComponent,

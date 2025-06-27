@@ -107,7 +107,7 @@ export class ProjectListComponent implements OnInit {
     
     // Admin tüm projeleri iptal edebilir
     if (this.currentUser.role === UserRole.ADMIN) {
-      return project.status === 'active' || project.status === 'planning';
+      return project.status !== 'cancelled';
     }
     
     // Project Lead sadece kendi oluşturduğu projeleri iptal edebilir

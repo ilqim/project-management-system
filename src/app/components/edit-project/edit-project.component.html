@@ -1,0 +1,31 @@
+<div class="edit-project" *ngIf="loaded">
+  <h2>Projeyi Düzenle</h2>
+  <form (ngSubmit)="updateProject()">
+    <div class="form-group">
+      <label for="name">Proje Adı</label>
+      <input id="name" name="name" [(ngModel)]="projectForm.name" required />
+      <p class="previous" *ngIf="original.name">Önceki: {{ original.name }}</p>
+    </div>
+    <div class="form-group">
+      <label for="description">Açıklama</label>
+      <textarea id="description" name="description" [(ngModel)]="projectForm.description"></textarea>
+      <p class="previous" *ngIf="original.description">Önceki: {{ original.description }}</p>
+    </div>
+    <div class="form-group">
+      <label for="startDate">Başlangıç</label>
+      <input id="startDate" type="date" name="startDate" [(ngModel)]="projectForm.startDate" />
+    </div>
+    <div class="form-group">
+      <label for="endDate">Bitiş</label>
+      <input id="endDate" type="date" name="endDate" [(ngModel)]="projectForm.endDate" />
+    </div>
+    <div class="form-group">
+      <label for="teamMembers">Proje Ekibi</label>
+      <select id="teamMembers" name="teamMembers" multiple [(ngModel)]="projectForm.teamMembers">
+        <option *ngFor="let user of allUsers" [value]="user.id">{{ user.name }} ({{ user.role }})</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <button type="button" class="btn" (click)="cancel()">İptal</button>
+  </form>
+</div>
