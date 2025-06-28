@@ -36,7 +36,6 @@
                     <span class="task-priority" [class]="'priority-' + task.priority">
                       {{ getPriorityText(task.priority) }}
                     </span>
-                    <button *ngIf="task.reporterId === currentUser?.id" class="btn btn-sm" (click)="editTask(task)">Düzenle</button>
                   </div>
                   <div class="task-meta">
                     <span *ngIf="task.dueDate" class="due-date" [class.overdue]="isOverdue(task.dueDate)">
@@ -71,7 +70,6 @@
   <section class="actions" *ngIf="canManage()">
     <button class="btn" (click)="editProject()">Projeyi Düzenle</button>
     <button class="btn" (click)="manageTeam()">Takım Yönetimi</button>
-    <button class="btn" (click)="refreshMemberTasks()">Görevleri Yenile</button>
   </section>
 
   <p class="readonly" *ngIf="!canManage()">Bu projeyi düzenleme yetkiniz yok.</p>

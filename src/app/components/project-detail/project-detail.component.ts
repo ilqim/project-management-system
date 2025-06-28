@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Project, ProjectInvite, InviteStatus } from '../../models/project.model';
 import { ProjectService } from '../../services/project.service';
@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { User, UserRole } from '../../models/user.model';
 import { Task, TaskPriority } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
+import { Subscription } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 
 @Component({
@@ -20,7 +21,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
         ])
     ]
 })
-export class ProjectDetailComponent implements OnInit {
+export class ProjectDetailComponent implements OnInit, OnDestroy {
     project: Project | null = null;
     loading = false;
     currentUser: User | null = null;
@@ -29,6 +30,7 @@ export class ProjectDetailComponent implements OnInit {
     pendingInvites: ProjectInvite[] = [];
     expandedMembers: { [memberId: string]: boolean } = {};
     tasksLoaded = false; // Görevlerin yüklenip yüklenmediğini takip et
+    private tasksSub?: Subscription;
 
     constructor(
         private route: ActivatedRoute,
@@ -41,6 +43,16 @@ export class ProjectDetailComponent implements OnInit {
     ngOnInit(): void {
         this.currentUser = this.auth.getCurrentUser();
         this.loadProject();
+        this.tasksSub = this.taskService.tasks$.subscribe(tasks => {
+            if (this.project) {
+                const projectTasks = tasks.filter(t => t.projectId === this.project!.id);
+                this.mapMemberTasks(projectTasks);
+            }
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.tasksSub?.unsubscribe();
     }
 
     // Düzeltilmiş toggleMemberTasks - API çağrısı kaldırıldı
@@ -133,25 +145,8 @@ export class ProjectDetailComponent implements OnInit {
             next: (tasks) => {
                 console.log('Tasks received:', tasks);
                 
-                const map: { [id: string]: Task[] } = {};
-                
-                // Tüm takım üyelerini başlangıçta boş array ile initialize et
-                if (this.project?.teamMembers) {
-                    this.project.teamMembers.forEach(memberId => {
-                        map[memberId] = [];
-                    });
-                }
-                
-                // Görevleri üyelerine göre grupla
-                tasks.forEach(task => {
-                    if (task.assigneeId && this.project?.teamMembers?.includes(task.assigneeId)) {
-                        map[task.assigneeId].push(task);
-                    }
-                });
-                
-                this.memberTasks = map;
+                this.mapMemberTasks(tasks);
                 this.tasksLoaded = true; // Görevler yüklendi işareti
-                console.log('Member tasks mapped:', this.memberTasks);
             },
             error: (error) => {
                 console.error('Error loading member tasks:', error);
@@ -162,6 +157,24 @@ export class ProjectDetailComponent implements OnInit {
     getMemberName(id: string): string {
         const user = this.auth.getUserById(id);
         return user ? user.name : `Kullanıcı ${id}`;
+    }
+
+    private mapMemberTasks(tasks: Task[]): void {
+        const map: { [id: string]: Task[] } = {};
+
+        if (this.project?.teamMembers) {
+            this.project.teamMembers.forEach(memberId => {
+                map[memberId] = [];
+            });
+        }
+
+        tasks.forEach(task => {
+            if (task.assigneeId && this.project?.teamMembers?.includes(task.assigneeId)) {
+                map[task.assigneeId].push(task);
+            }
+        });
+
+        this.memberTasks = map;
     }
 
     loadInvites(projectId: string): void {

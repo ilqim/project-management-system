@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Task } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
@@ -6,13 +6,14 @@ import { AuthService } from '../../services/auth.service';
 import { ProjectService } from '../../services/project.service';
 import { User, UserRole } from '../../models/user.model';
 import { Project } from '../../models/project.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.scss']
 })
-export class TasksComponent implements OnInit {
+export class TasksComponent implements OnInit, OnDestroy {
   tasks: Task[] = [];
   filteredTasks: Task[] = [];
   currentUser: User | null = null;
@@ -24,6 +25,8 @@ export class TasksComponent implements OnInit {
   selectedTag = '';
   selectedProject = '';
   UserRole = UserRole;
+
+  private tasksSub?: Subscription;
 
   constructor(
     private taskService: TaskService,
@@ -37,11 +40,16 @@ export class TasksComponent implements OnInit {
     this.loadProjectsAndTasks();
   }
 
+  ngOnDestroy(): void {
+    this.tasksSub?.unsubscribe();
+  }
+
+
   private loadProjectsAndTasks(): void {
     this.projectService.getProjects().subscribe(projects => {
       this.projects = projects;
       const projectIds = this.projects.map(p => p.id);
-      this.taskService.getTasks().subscribe(tasks => {
+      this.tasksSub = this.taskService.tasks$.subscribe(tasks => {
         this.tasks = tasks.filter(t => projectIds.includes(t.projectId));
         this.updateAvailableTags();
         this.applyRoleFilter();
