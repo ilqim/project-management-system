@@ -10,6 +10,12 @@ import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
 import { Subscription } from 'rxjs';
 
+const BOARD_COLUMNS: KanbanColumn[] = [
+  { id: 'todo', name: 'Todo', order: 0 },
+  { id: 'in-progress', name: 'In Progress', order: 1 },
+  { id: 'done', name: 'Done', order: 2 }
+];
+
 @Component({
   selector: 'app-kanban-board',
   templateUrl: './kanban-board.component.html',
@@ -55,7 +61,7 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
     const currentProject = this.projectService.getCurrentProject();
     if (currentProject && currentProject.id === projectId) {
       this.project = currentProject;
-      this.columns = currentProject.kanbanColumns || [];
+      this.columns = BOARD_COLUMNS;
       this.loadTasks(projectId);
     } else {
       // If not current project, load it
@@ -64,7 +70,7 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
           const project = projects.find(p => p.id === projectId);
           if (project) {
             this.project = project;
-            this.columns = project.kanbanColumns || [];
+            this.columns = BOARD_COLUMNS;
             this.projectService.setCurrentProject(project.id);
             this.loadTasks(projectId);
           } else {
@@ -107,6 +113,11 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
 
     const task = this.tasks.find(t => t.id === taskId);
     if (!task || task.columnId === columnId) return;
+
+    if (task.assigneeId !== this.currentUser?.id) {
+      this.notification.addNotification('Only the assignee can move this task', 'warning');
+      return;
+    }
 
     // Check WIP limit
     const column = this.columns.find(c => c.id === columnId);

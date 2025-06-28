@@ -1,9 +1,21 @@
 <div class="kanban-board">
-  <div class="column" *ngFor="let col of columns">
-    <h3>{{ col.name }}</h3>
-    <div class="task" *ngFor="let task of getTasksForColumn(col.id)">
+  <div
+    class="column"
+    *ngFor="let col of columns"
+    (dragover)="onDragOver($event)"
+    (drop)="onTaskDrop($event, col.id)"
+  >
+    <div class="column-header">
+      <h3>{{ col.name }}</h3>
+    </div>
+    <div
+      class="task"
+      *ngFor="let task of getTasksForColumn(col.id)"
+      [class.readonly]="task.assigneeId !== currentUser?.id"
+      [draggable]="task.assigneeId === currentUser?.id"
+      (dragstart)="onTaskDragStart($event, task)"
+    >
       {{ task.title }}
-      <span *ngIf="task.dependencies?.length" title="Bağımlı görev">🔗</span>
     </div>
   </div>
 </div>

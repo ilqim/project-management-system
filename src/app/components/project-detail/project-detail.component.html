@@ -2,6 +2,7 @@
   <header class="detail-header">
     <button class="back-btn" (click)="goBack()">&larr; Geri</button>
     <h2>{{ p.name }}</h2>
+    <a class="kanban-link" [routerLink]="['/projects', p.id, 'kanban']">Kanban Board</a>
   </header>
 
   <section class="info" *ngIf="!loading">
