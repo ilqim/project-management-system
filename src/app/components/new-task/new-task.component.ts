@@ -20,6 +20,7 @@ export class NewTaskComponent implements OnInit {
   dueDate: string | null = null;
   isEditMode = false;
   taskId: string | null = null;
+  returnUrl: string | null = null;
 
   users: User[] = [];
   currentUser: User | null = null;
@@ -41,6 +42,7 @@ export class NewTaskComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
     this.taskId = this.route.snapshot.paramMap.get('id');
     if (this.taskId) {
       this.isEditMode = true;
@@ -134,7 +136,9 @@ export class NewTaskComponent implements OnInit {
 
     request$.subscribe({
       next: () => {
-        if (currentProject) {
+        if (this.returnUrl) {
+          this.router.navigateByUrl(this.returnUrl);
+        } else if (currentProject) {
           this.router.navigate(['/projects', currentProject.id]);
         } else {
           this.router.navigate(['/projects']);
@@ -145,6 +149,10 @@ export class NewTaskComponent implements OnInit {
   }
 
   cancel(): void {
-    this.router.navigate(['/dashboard']);
+    if (this.returnUrl) {
+      this.router.navigateByUrl(this.returnUrl);
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
   }
 }

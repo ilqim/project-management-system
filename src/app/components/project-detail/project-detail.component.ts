@@ -93,7 +93,10 @@ export class ProjectDetailComponent implements OnInit {
     }
 
     editTask(task: Task): void {
-        this.router.navigate(['/tasks/edit', task.id]);
+        const returnUrl = this.project ? `/projects/${this.project.id}` : '/projects';
+        this.router.navigate(['/tasks/edit', task.id], {
+            queryParams: { returnUrl }
+        });
     }
 
     loadProject(): void {

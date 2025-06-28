@@ -108,7 +108,9 @@ export class TasksComponent implements OnInit {
   }
 
   editTask(task: Task): void {
-    this.router.navigate(['/tasks/edit', task.id]);
+    this.router.navigate(['/tasks/edit', task.id], {
+      queryParams: { returnUrl: '/tasks' }
+    });
   }
 
   private updateAvailableTags(): void {
