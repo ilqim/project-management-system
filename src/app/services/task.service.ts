@@ -39,6 +39,14 @@ export class TaskService {
     });
   }
 
+  getTask(taskId: string): Observable<Task | undefined> {
+    return new Observable(observer => {
+      const tasks = this.storage.get<Task[]>('tasks') || [];
+      observer.next(tasks.find(t => t.id === taskId));
+      observer.complete();
+    });
+  }
+
   createTask(taskData: Partial<Task>): Observable<Task> {
     return new Observable(observer => {
       const user = this.auth.getCurrentUser();

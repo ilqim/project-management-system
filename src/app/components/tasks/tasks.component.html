@@ -26,6 +26,7 @@
           <input type="checkbox" *ngIf="canToggleComplete(task)" (change)="toggleComplete(task)" />
           <strong>{{ task.title }}</strong>
           <span class="project">({{ getProjectName(task.projectId) }})</span>
+          <button *ngIf="task.reporterId === currentUser?.id" class="btn btn-sm" (click)="editTask(task)">Düzenle</button>
         </div>
         <div class="task-meta">
           <span *ngIf="task.assigneeId">Atanan: {{ getUserName(task.assigneeId) }}</span>
@@ -55,6 +56,7 @@
           <input type="checkbox" *ngIf="canToggleComplete(task)" (change)="toggleComplete(task)" />
           <strong>{{ task.title }}</strong>
           <span class="project">({{ getProjectName(task.projectId) }})</span>
+          <button *ngIf="task.reporterId === currentUser?.id" class="btn btn-sm" (click)="editTask(task)">Düzenle</button>
         </div>
         <p class="description">{{ task.description }}</p>
         <div class="task-tags" *ngIf="task.tags && task.tags.length">
@@ -83,6 +85,7 @@
           <input type="checkbox" *ngIf="canToggleComplete(task)" (change)="toggleComplete(task)" />
           <strong>{{ task.title }}</strong>
           <span class="project">({{ getProjectName(task.projectId) }})</span>
+          <button *ngIf="task.reporterId === currentUser?.id" class="btn btn-sm" (click)="editTask(task)">Düzenle</button>
         </div>
         <div class="task-meta">
           <span *ngIf="task.assigneeId">Atanan: {{ getUserName(task.assigneeId) }}</span>

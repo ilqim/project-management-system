@@ -92,6 +92,10 @@ export class ProjectDetailComponent implements OnInit {
         });
     }
 
+    editTask(task: Task): void {
+        this.router.navigate(['/tasks/edit', task.id]);
+    }
+
     loadProject(): void {
         const id = this.route.snapshot.paramMap.get('id');
         if (!id) {

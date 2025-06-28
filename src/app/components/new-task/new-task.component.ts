@@ -18,6 +18,8 @@ export class NewTaskComponent implements OnInit {
   selectedTags: string[] = [];
   assigneeId: string | null = null;
   dueDate: string | null = null;
+  isEditMode = false;
+  taskId: string | null = null;
 
   users: User[] = [];
   currentUser: User | null = null;
@@ -39,24 +41,49 @@ export class NewTaskComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
-    const routeProjectId = this.route.snapshot.queryParamMap.get('projectId');
-    const currentProject = this.projectService.getCurrentProject();
-
-    if (!currentProject && routeProjectId) {
-      this.projectService.getProject(routeProjectId).subscribe(p => {
-        if (p) {
-          this.projectService.setCurrentProject(p.id);
-          this.initializeUsers(p);
-        } else {
-          alert('Proje bulunamadı');
-          this.router.navigate(['/projects']);
+    this.taskId = this.route.snapshot.paramMap.get('id');
+    if (this.taskId) {
+      this.isEditMode = true;
+      this.taskService.getTask(this.taskId).subscribe(task => {
+        if (!task) {
+          alert('Görev bulunamadı');
+          this.router.navigate(['/tasks']);
+          return;
         }
+        this.title = task.title;
+        this.description = task.description;
+        this.selectedTags = [...task.tags];
+        this.assigneeId = task.assigneeId || null;
+        this.dueDate = task.dueDate ? new Date(task.dueDate).toISOString().substring(0,10) : null;
+
+        this.projectService.getProject(task.projectId).subscribe(p => {
+          if (p) {
+            this.projectService.setCurrentProject(p.id);
+            this.initializeUsers(p);
+          }
+        });
       });
-    } else if (currentProject) {
-      this.initializeUsers(currentProject);
+    
     } else {
-      alert('Önce bir proje seçmelisiniz');
-      this.router.navigate(['/projects']);
+      const routeProjectId = this.route.snapshot.queryParamMap.get('projectId');
+      const currentProject = this.projectService.getCurrentProject();
+
+      if (!currentProject && routeProjectId) {
+        this.projectService.getProject(routeProjectId).subscribe(p => {
+          if (p) {
+            this.projectService.setCurrentProject(p.id);
+            this.initializeUsers(p);
+          } else {
+            alert('Proje bulunamadı');
+            this.router.navigate(['/projects']);
+          }
+        });
+      } else if (currentProject) {
+        this.initializeUsers(currentProject);
+      } else {
+        alert('Önce bir proje seçmelisiniz');
+        this.router.navigate(['/projects']);
+      }
     }
   }
 
@@ -83,7 +110,7 @@ export class NewTaskComponent implements OnInit {
     return this.roleRank(user.role) <= this.roleRank(this.currentUser.role);
   }
 
-  createTask(): void {
+  saveTask(): void {
     if (!this.title.trim()) return;
 
     const taskData: any = {
@@ -101,7 +128,11 @@ export class NewTaskComponent implements OnInit {
     }
     const currentProject = this.projectService.getCurrentProject();
 
-    this.taskService.createTask(taskData).subscribe({
+    const request$ = this.isEditMode && this.taskId
+      ? this.taskService.updateTask(this.taskId, taskData)
+      : this.taskService.createTask(taskData);
+
+    request$.subscribe({
       next: () => {
         if (currentProject) {
           this.router.navigate(['/projects', currentProject.id]);
@@ -109,7 +140,7 @@ export class NewTaskComponent implements OnInit {
           this.router.navigate(['/projects']);
         }
       },
-      error: (err) => alert('Görev oluşturulamadı: ' + err)
+      error: (err) => alert('Görev kaydedilemedi: ' + err)
     });
   }
 

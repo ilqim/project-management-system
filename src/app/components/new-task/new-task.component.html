@@ -1,6 +1,6 @@
 <div class="new-task">
-  <h2>Yeni Görev Ekle</h2>
-  <form (ngSubmit)="createTask()">
+  <h2>{{ isEditMode ? 'Görevi Düzenle' : 'Yeni Görev Ekle' }}</h2>
+  <form (ngSubmit)="saveTask()">
     <div class="form-group">
       <label for="title">Başlık</label>
       <input id="title" name="title" [(ngModel)]="title" required />
@@ -28,7 +28,9 @@
         <option *ngFor="let tag of tagOptions" [ngValue]="tag">{{ tag }}</option>
       </select>
     </div>
-    <button type="submit" class="btn btn-primary">Oluştur</button>
+    <button type="submit" class="btn btn-primary">
+      {{ isEditMode ? 'Güncelle' : 'Oluştur' }}
+    </button>
     <button type="button" class="btn" (click)="cancel()">İptal</button>
   </form>
 </div>

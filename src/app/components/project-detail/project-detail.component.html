@@ -35,6 +35,7 @@
                     <span class="task-priority" [class]="'priority-' + task.priority">
                       {{ getPriorityText(task.priority) }}
                     </span>
+                    <button *ngIf="task.reporterId === currentUser?.id" class="btn btn-sm" (click)="editTask(task)">Düzenle</button>
                   </div>
                   <div class="task-meta">
                     <span *ngIf="task.dueDate" class="due-date" [class.overdue]="isOverdue(task.dueDate)">

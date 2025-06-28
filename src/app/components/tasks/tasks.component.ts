@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Task } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
 import { AuthService } from '../../services/auth.service';
@@ -27,7 +28,8 @@ export class TasksComponent implements OnInit {
   constructor(
     private taskService: TaskService,
     private authService: AuthService,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -103,6 +105,10 @@ export class TasksComponent implements OnInit {
       (!this.selectedProject || t.projectId === this.selectedProject) &&
       (!this.selectedTag || t.tags.includes(this.selectedTag))
     );
+  }
+
+  editTask(task: Task): void {
+    this.router.navigate(['/tasks/edit', task.id]);
   }
 
   private updateAvailableTags(): void {
