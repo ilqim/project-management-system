@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { ProjectService } from '../../services/project.service';
 import { User, UserRole } from '../../models/user.model';
 import { Project } from '../../models/project.model'; // varsa project tipi için
+import { Task } from '../../models/task.model';
 
 @Component({
   selector: 'app-new-task',
@@ -24,6 +25,8 @@ export class NewTaskComponent implements OnInit {
 
   users: User[] = [];
   currentUser: User | null = null;
+  availableTasks: Task[] = [];
+  selectedDependencies: string[] = [];
 
   private roleHierarchy = [
     UserRole.VIEWER,
@@ -62,6 +65,8 @@ export class NewTaskComponent implements OnInit {
           if (p) {
             this.projectService.setCurrentProject(p.id);
             this.initializeUsers(p);
+            this.loadAvailableTasks(p.id);
+            this.selectedDependencies = [...task.dependencies];
           }
         });
       });
@@ -75,6 +80,7 @@ export class NewTaskComponent implements OnInit {
           if (p) {
             this.projectService.setCurrentProject(p.id);
             this.initializeUsers(p);
+            this.loadAvailableTasks(p.id);
           } else {
             alert('Proje bulunamadı');
             this.router.navigate(['/projects']);
@@ -82,6 +88,7 @@ export class NewTaskComponent implements OnInit {
         });
       } else if (currentProject) {
         this.initializeUsers(currentProject);
+        this.loadAvailableTasks(currentProject.id);
       } else {
         alert('Önce bir proje seçmelisiniz');
         this.router.navigate(['/projects']);
@@ -100,6 +107,15 @@ export class NewTaskComponent implements OnInit {
     if (preselectedAssignee && memberIds.includes(preselectedAssignee)) {
       this.assigneeId = preselectedAssignee;
     }
+    this.loadAvailableTasks(project.id);
+  }
+
+  private loadAvailableTasks(projectId: string): void {
+    this.taskService.getTasks(projectId).subscribe(tasks => {
+      this.availableTasks = this.taskId
+        ? tasks.filter(t => t.id !== this.taskId)
+        : tasks;
+    });
   }
 
   private roleRank(role: UserRole): number {
@@ -118,7 +134,8 @@ export class NewTaskComponent implements OnInit {
     const taskData: any = {
       title: this.title,
       description: this.description,
-      tags: this.selectedTags
+      tags: this.selectedTags,
+      dependencies: this.selectedDependencies
     };
 
     if (this.assigneeId) {

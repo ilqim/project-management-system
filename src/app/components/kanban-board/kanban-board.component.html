@@ -3,6 +3,7 @@
     <h3>{{ col.name }}</h3>
     <div class="task" *ngFor="let task of getTasksForColumn(col.id)">
       {{ task.title }}
+      <span *ngIf="task.dependencies?.length" title="Bağımlı görev">🔗</span>
     </div>
   </div>
 </div>

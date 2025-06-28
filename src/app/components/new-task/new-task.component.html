@@ -23,6 +23,12 @@
       <input id="dueDate" name="dueDate" type="date" [(ngModel)]="dueDate" />
     </div>
     <div class="form-group">
+      <label for="dependencies">Bağımlılıklar</label>
+      <select id="dependencies" name="dependencies" multiple [(ngModel)]="selectedDependencies">
+        <option *ngFor="let t of availableTasks" [ngValue]="t.id">{{ t.title }}</option>
+      </select>
+    </div>
+    <div class="form-group">
       <label for="tags">Etiketler</label>
       <select id="tags" name="tags" multiple [(ngModel)]="selectedTags">
         <option *ngFor="let tag of tagOptions" [ngValue]="tag">{{ tag }}</option>
