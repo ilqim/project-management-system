@@ -101,11 +101,13 @@ export class TaskService {
       // update related project stats
       this.updateProjectStats(currentProject.id);
       
-      this.notification.addNotification(
-        `New task "${task.title}" created`,
-        'success',
-        task.projectId
-      );
+      const assigneeName = task.assigneeId
+        ? this.auth.getUserById(task.assigneeId)?.name
+        : null;
+      const message = assigneeName
+        ? `${assigneeName} kişisine yeni görev verildi: "${task.title}"`
+        : `Yeni görev oluşturuldu: "${task.title}"`;
+      this.notification.addNotification(message, 'success', task.projectId);
       observer.next(task);
       observer.complete();
     });
@@ -138,7 +140,7 @@ export class TaskService {
       // Check if task moved between columns
       if (updates.columnId && updates.columnId !== oldTask.columnId) {
         this.notification.addNotification(
-          `Task "${oldTask.title}" moved to ${updates.columnId}`,
+          `Görev "${oldTask.title}" ${updates.columnId} sütununa taşındı`,
           'info',
           oldTask.projectId
         );
@@ -149,7 +151,7 @@ export class TaskService {
         updates.completedAt
       ) {
         this.notification.addNotification(
-          `Task "${oldTask.title}" completed`,
+          `Görev "${oldTask.title}" tamamlandı`,
           'success',
           oldTask.projectId
         );
@@ -188,7 +190,7 @@ export class TaskService {
       
       if (task) {
         this.notification.addNotification(
-          `Task "${task.title}" deleted`,
+          `Görev "${task.title}" silindi`,
           'warning',
           task.projectId
         );
@@ -293,7 +295,7 @@ export class TaskService {
       task.comments.push(comment);
       this.updateTask(taskId, { comments: task.comments }).subscribe(() => {
         this.notification.addNotification(
-          `New comment added to "${task.title}"`,
+          `"${task.title}" görevine yeni yorum eklendi`,
           'info',
           task.projectId
         );

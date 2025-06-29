@@ -51,32 +51,7 @@ export class DashboardComponent implements OnInit {
 
   private accessibleProjectIds: string[] = [];
 
-  upcomingTasks: UpcomingTask[] = [
-    {
-      id: '1',
-      title: 'Frontend geliştirme',
-      description: 'Kullanıcı arayüzü tasarımı',
-      priority: 'HIGH',
-      dueDate: new Date(),
-      assignee: 'John Doe'
-    },
-    {
-      id: '2',
-      title: 'Test yazma',
-      description: 'Unit testlerin yazılması',
-      priority: 'MEDIUM',
-      dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
-      assignee: 'Jane Smith'
-    },
-    {
-      id: '3',
-      title: 'Dokümantasyon',
-      description: 'API dokümantasyonu güncelleme',
-      priority: 'LOW',
-      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Next week
-      assignee: 'Admin'
-    }
-  ];
+  upcomingTasks: UpcomingTask[] = [];
 
   upcomingProjects: Project[] = [];
 
@@ -94,10 +69,8 @@ export class DashboardComponent implements OnInit {
       this.accessibleProjectIds = projects.map(p => p.id);
       this.loadDashboardData();
       this.loadUpcomingProjects();
+      this.loadUpcomingTasks();
       this.subscribeToActivities();
-      if (this.currentUser?.role === UserRole.DEVELOPER) {
-        this.upcomingTasks = this.upcomingTasks.filter(t => t.assignee === this.currentUser?.name);
-      }
     });
   }
 
@@ -129,7 +102,7 @@ export class DashboardComponent implements OnInit {
 
       this.recentActivities = filtered
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-        .slice(0, 10)
+        .slice(0, 3)
         .map(n => this.mapNotificationToActivity(n));
     });
   }
@@ -142,6 +115,35 @@ export class DashboardComponent implements OnInit {
       iconClass: this.getIconForType(n.type)
     };
   }
+
+  private loadUpcomingTasks(): void {
+    this.taskService.getTasks().subscribe(tasks => {
+      const now = new Date();
+      const filtered = tasks
+        .filter(t => t.dueDate && new Date(t.dueDate) > now)
+        .filter(t => this.accessibleProjectIds.includes(t.projectId));
+
+      const upcoming = filtered
+        .map(t => ({
+          id: t.id,
+          title: t.title,
+          description: t.description,
+          priority: (t.priority || 'MEDIUM').toUpperCase() as 'HIGH' | 'MEDIUM' | 'LOW',
+          dueDate: new Date(t.dueDate as any),
+          assignee: this.auth.getUserById(t.assigneeId || '')?.name || 'N/A'
+        }))
+        .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
+
+      const finalTasks = upcoming.slice(0, 3);
+
+      if (this.currentUser?.role === UserRole.DEVELOPER) {
+        this.upcomingTasks = finalTasks.filter(t => t.assignee === this.currentUser?.name);
+      } else {
+        this.upcomingTasks = finalTasks;
+      }
+    });
+  }
+
 
   private getIconForType(type: string): string {
     switch (type) {

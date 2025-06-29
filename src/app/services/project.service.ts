@@ -117,7 +117,7 @@ export class ProjectService {
             this.storage.set('projects', projects);
 
             this.notification.addNotification(
-                `New project created: "${project.name}"`,
+                `Yeni proje oluşturuldu: "${project.name}"`,
                 'success',
                 project.id
             );
@@ -262,7 +262,7 @@ export class ProjectService {
 
             this.storage.set('projects', projects);
             this.notification.addNotification(
-                `${user.name} added to project "${project.name}"`,
+                `${user.name} kullanıcısı "${project.name}" projesine eklendi`,
                 'info',
                 project.id
             );
