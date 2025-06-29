@@ -159,7 +159,10 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
     }
 
     // Update task column
-    this.taskService.updateTask(taskId, { columnId }).subscribe({
+    const update$ = columnId === 'done'
+      ? this.taskService.completeTask(taskId)
+      : this.taskService.updateTask(taskId, { columnId });
+    update$.subscribe({
       next: (updatedTask: Task) => {
         const taskIndex = this.tasks.findIndex(t => t.id === taskId);
         if (taskIndex !== -1) {

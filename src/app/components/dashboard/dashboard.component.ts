@@ -19,7 +19,6 @@ interface Activity {
   text: string;
   time: string;
   iconClass: string;
-  exactTime: string;
 }
 
 interface UpcomingTask {
@@ -113,8 +112,7 @@ export class DashboardComponent implements OnInit {
       id: n.id,
       text: n.message,
       time: this.getTimeAgo(new Date(n.timestamp)),
-      iconClass: this.getIconForType(n.type),
-      exactTime: new Date(n.timestamp).toLocaleString('tr-TR')
+      iconClass: this.getIconForType(n.type)
     };
   }
 

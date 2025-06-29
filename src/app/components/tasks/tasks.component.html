@@ -23,7 +23,13 @@
     <ul class="task-list" *ngIf="assignedTasks.length > 0">
       <li *ngFor="let task of assignedTasks" class="task-item">
         <div class="task-header">
-          <input type="checkbox" *ngIf="canToggleComplete(task)" (change)="toggleComplete(task)" />
+          <input
+            type="checkbox"
+            *ngIf="task.assigneeId === currentUser?.id"
+            [checked]="task.completedAt || task.columnId === 'done'"
+            [disabled]="!canToggleComplete(task)"
+            (change)="toggleComplete(task)"
+          />
           <strong>{{ task.title }}</strong>
           <i class="fas fa-link" *ngIf="task.dependencies?.length" title="Bağımlı görev"></i>
           <span class="project">({{ getProjectName(task.projectId) }})</span>
@@ -55,7 +61,13 @@
     <ul class="task-list" *ngIf="myTasks.length > 0">
       <li *ngFor="let task of myTasks" class="task-item">
         <div class="task-header">
-          <input type="checkbox" *ngIf="canToggleComplete(task)" (change)="toggleComplete(task)" />
+          <input
+            type="checkbox"
+            *ngIf="task.assigneeId === currentUser?.id"
+            [checked]="task.completedAt || task.columnId === 'done'"
+            [disabled]="!canToggleComplete(task)"
+            (change)="toggleComplete(task)"
+          />
           <strong>{{ task.title }}</strong>
           <i class="fas fa-link" *ngIf="task.dependencies?.length" title="Bağımlı görev"></i>
           <span class="project">({{ getProjectName(task.projectId) }})</span>
@@ -88,7 +100,13 @@
     <ul class="task-list" *ngIf="filteredTasks.length > 0">
       <li *ngFor="let task of filteredTasks" class="task-item">
         <div class="task-header">
-          <input type="checkbox" *ngIf="canToggleComplete(task)" (change)="toggleComplete(task)" />
+          <input
+            type="checkbox"
+            *ngIf="task.assigneeId === currentUser?.id"
+            [checked]="task.completedAt || task.columnId === 'done'"
+            [disabled]="!canToggleComplete(task)"
+            (change)="toggleComplete(task)"
+          />
           <strong>{{ task.title }}</strong>
           <i class="fas fa-link" *ngIf="task.dependencies?.length" title="Bağımlı görev"></i>
           <span class="project">({{ getProjectName(task.projectId) }})</span>

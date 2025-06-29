@@ -137,7 +137,10 @@ export class TasksComponent implements OnInit, OnDestroy {
   }
 
   canToggleComplete(task: Task): boolean {
-    return !!this.currentUser && task.assigneeId === this.currentUser.id && !task.completedAt;
+    return !!this.currentUser &&
+      task.assigneeId === this.currentUser.id &&
+      !task.completedAt &&
+      task.columnId !== 'done';
   }
 
   toggleComplete(task: Task): void {
@@ -147,6 +150,7 @@ export class TasksComponent implements OnInit, OnDestroy {
     this.taskService.completeTask(task.id).subscribe(updated => {
       task.progress = updated.progress;
       task.completedAt = updated.completedAt;
+      task.columnId = updated.columnId;
     });
   }
 
