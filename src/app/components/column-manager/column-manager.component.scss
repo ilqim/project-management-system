@@ -3,6 +3,17 @@
 }
 .column-item {
   margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+
+  button {
+    margin-right: 0.25rem;
+  }
+
+  input {
+    flex: 1;
+    margin-right: 0.25rem;
+  }
 }
 .add-column {
   margin-top: 1rem;

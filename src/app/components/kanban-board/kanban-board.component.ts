@@ -53,7 +53,7 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
   }
 
   onColumnsUpdated(cols: KanbanColumn[]): void {
-    this.columns = cols;
+    this.columns = [...cols].sort((a, b) => a.order - b.order);
   }
 
   canManageColumns(): boolean {
@@ -82,7 +82,7 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
     const currentProject = this.projectService.getCurrentProject();
     if (currentProject && currentProject.id === projectId) {
       this.project = currentProject;
-      this.columns = currentProject.columns || DEFAULT_COLUMNS;
+      this.columns = (currentProject.columns || DEFAULT_COLUMNS).sort((a, b) => a.order - b.order);
       this.loadTasks(projectId);
     } else {
       // If not current project, load it
@@ -91,7 +91,7 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
           const project = projects.find(p => p.id === projectId);
           if (project) {
             this.project = project;
-            this.columns = project.columns || DEFAULT_COLUMNS;
+            this.columns = (project.columns || DEFAULT_COLUMNS).sort((a, b) => a.order - b.order);
             this.projectService.setCurrentProject(project.id);
             this.loadTasks(projectId);
           } else {

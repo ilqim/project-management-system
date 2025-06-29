@@ -1,7 +1,10 @@
 <div class="column-manager">
   <div class="column-list">
-    <div class="column-item" *ngFor="let col of columns">
+    <div class="column-item" *ngFor="let col of columns; let i = index">
+      <button (click)="moveUp(i)" [disabled]="i === 0">&#8593;</button>
+      <button (click)="moveDown(i)" [disabled]="i === columns.length - 1">&#8595;</button>
       <input [(ngModel)]="col.name" (blur)="save()" />
+      <button *ngIf="!isDefaultColumn(col)" (click)="removeColumn(i)">Delete</button>
     </div>
   </div>
   <div class="add-column">

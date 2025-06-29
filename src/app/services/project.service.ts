@@ -394,8 +394,7 @@ export class ProjectService {
         return [
             { id: 'todo', name: 'To Do', order: 0, color: '#64748b' },
             { id: 'in-progress', name: 'In Progress', order: 1, color: '#3b82f6' },
-            { id: 'review', name: 'Review', order: 2, color: '#f59e0b' },
-            { id: 'done', name: 'Done', order: 3, color: '#10b981' }
+            { id: 'done', name: 'Done', order: 2, color: '#10b981' }
         ];
     }
 }
