@@ -101,7 +101,11 @@ export class TaskService {
       // update related project stats
       this.updateProjectStats(currentProject.id);
       
-      this.notification.addNotification(`New task "${task.title}" created`, 'success');
+      this.notification.addNotification(
+        `New task "${task.title}" created`,
+        'success',
+        task.projectId
+      );
       observer.next(task);
       observer.complete();
     });
@@ -134,8 +138,20 @@ export class TaskService {
       // Check if task moved between columns
       if (updates.columnId && updates.columnId !== oldTask.columnId) {
         this.notification.addNotification(
-          `Task "${oldTask.title}" moved to ${updates.columnId}`, 
-          'info'
+          `Task "${oldTask.title}" moved to ${updates.columnId}`,
+          'info',
+          oldTask.projectId
+        );
+      }
+
+      if (
+        (updates.progress && updates.progress === 100) ||
+        updates.completedAt
+      ) {
+        this.notification.addNotification(
+          `Task "${oldTask.title}" completed`,
+          'success',
+          oldTask.projectId
         );
       }
       
@@ -171,7 +187,11 @@ export class TaskService {
       }
       
       if (task) {
-        this.notification.addNotification(`Task "${task.title}" deleted`, 'warning');
+        this.notification.addNotification(
+          `Task "${task.title}" deleted`,
+          'warning',
+          task.projectId
+        );
       }
       
       observer.next(true);
@@ -272,7 +292,11 @@ export class TaskService {
 
       task.comments.push(comment);
       this.updateTask(taskId, { comments: task.comments }).subscribe(() => {
-        this.notification.addNotification(`New comment added to "${task.title}"`, 'info');
+        this.notification.addNotification(
+          `New comment added to "${task.title}"`,
+          'info',
+          task.projectId
+        );
         observer.next(comment);
         observer.complete();
       });

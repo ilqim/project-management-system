@@ -8,6 +8,7 @@ export interface Notification {
   type: 'success' | 'error' | 'warning' | 'info';
   timestamp: Date;
   read: boolean;
+  projectId?: string;
 }
 
 @Injectable({
@@ -19,16 +20,20 @@ export class NotificationService {
 
   constructor(private storage: StorageService) {
     this.loadNotifications();
-    this.simulateRealTimeNotifications();
   }
 
-  addNotification(message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info'): void {
+  addNotification(
+    message: string,
+    type: 'success' | 'error' | 'warning' | 'info' = 'info',
+    projectId?: string
+  ): void {
     const notification: Notification = {
       id: this.storage.generateId(),
       message,
       type,
       timestamp: new Date(),
-      read: false
+      read: false,
+      projectId
     };
 
     const notifications = this.notificationsSubject.value;
@@ -64,22 +69,5 @@ export class NotificationService {
   private loadNotifications(): void {
     const notifications = this.storage.get<Notification[]>('notifications') || [];
     this.notificationsSubject.next(notifications);
-  }
-
-  private simulateRealTimeNotifications(): void {
-    const messages = [
-      'Task "API Integration" moved to In Progress',
-      'New comment added to "Database Design"',
-      'Project deadline approaching in 2 days',
-      'Team member John completed "Bug Fix #123"',
-      'New task assigned to you: "Code Review"'
-    ];
-
-    setInterval(() => {
-      if (Math.random() > 0.7) { // 30% chance every 10 seconds
-        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-        this.addNotification(randomMessage, 'info');
-      }
-    }, 10000);
   }
 }

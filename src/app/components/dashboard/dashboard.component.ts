@@ -5,6 +5,7 @@ import { User, UserRole } from '../../models/user.model';
 import { ProjectService } from '../../services/project.service';
 import { TaskService } from '../../services/task.service';
 import { Project } from '../../models/project.model';
+import { NotificationService, Notification } from '../../services/notification.service';
 
 interface StatsData {
   activeProjects: number;
@@ -46,32 +47,9 @@ export class DashboardComponent implements OnInit {
     teamMembers: 0
   };
 
-  recentActivities: Activity[] = [
-    {
-      id: '1',
-      text: 'Yeni görev eklendi: "API entegrasyonu"',
-      time: '2 saat önce',
-      iconClass: 'fas fa-plus text-success'
-    },
-    {
-      id: '2',
-      text: 'Görev tamamlandı: "Veritabanı tasarımı"',
-      time: '4 saat önce',
-      iconClass: 'fas fa-check text-success'
-    },
-    {
-      id: '3',
-      text: 'Yeni takım üyesi eklendi: Jane Smith',
-      time: '1 gün önce',
-      iconClass: 'fas fa-user-plus text-info'
-    },
-    {
-      id: '4',
-      text: 'Yeni proje oluşturuldu: "Mobile App"',
-      time: '2 gün önce',
-      iconClass: 'fas fa-folder text-primary'
-    }
-  ];
+  recentActivities: Activity[] = [];
+
+  private accessibleProjectIds: string[] = [];
 
   upcomingTasks: UpcomingTask[] = [
     {
@@ -106,15 +84,21 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private auth: AuthService,
     private projectService: ProjectService,
-    private taskService: TaskService
+    private taskService: TaskService,
+    private notification: NotificationService
   ) {}
 
   ngOnInit(): void {
     this.currentUser = this.auth.getCurrentUser();
-    this.loadDashboardData();
-    if (this.currentUser?.role === UserRole.DEVELOPER) {
-      this.upcomingTasks = this.upcomingTasks.filter(t => t.assignee === this.currentUser?.name);
-    }
+    this.projectService.getProjects().subscribe(projects => {
+      this.accessibleProjectIds = projects.map(p => p.id);
+      this.loadDashboardData();
+      this.loadUpcomingProjects();
+      this.subscribeToActivities();
+      if (this.currentUser?.role === UserRole.DEVELOPER) {
+        this.upcomingTasks = this.upcomingTasks.filter(t => t.assignee === this.currentUser?.name);
+      }
+    });
   }
 
   private loadDashboardData(): void {
@@ -134,6 +118,63 @@ export class DashboardComponent implements OnInit {
       });
     });
   }
+
+  private subscribeToActivities(): void {
+    this.notification.notifications$.subscribe((notes: Notification[]) => {
+      const filtered = notes.filter(n => {
+        if (this.currentUser?.role === UserRole.ADMIN) return true;
+        if (!n.projectId) return true;
+        return this.accessibleProjectIds.includes(n.projectId);
+      });
+
+      this.recentActivities = filtered
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, 10)
+        .map(n => this.mapNotificationToActivity(n));
+    });
+  }
+
+  private mapNotificationToActivity(n: Notification): Activity {
+    return {
+      id: n.id,
+      text: n.message,
+      time: this.getTimeAgo(new Date(n.timestamp)),
+      iconClass: this.getIconForType(n.type)
+    };
+  }
+
+  private getIconForType(type: string): string {
+    switch (type) {
+      case 'success':
+        return 'fas fa-check text-success';
+      case 'error':
+        return 'fas fa-times text-danger';
+      case 'warning':
+        return 'fas fa-exclamation-triangle text-warning';
+      default:
+        return 'fas fa-info-circle text-info';
+    }
+  }
+
+  private getTimeAgo(date: Date): string {
+    const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+    const intervals: { [key: string]: number } = {
+      year: 31536000,
+      month: 2592000,
+      week: 604800,
+      day: 86400,
+      hour: 3600,
+      minute: 60
+    };
+    for (const i in intervals) {
+      const counter = Math.floor(seconds / intervals[i]);
+      if (counter > 0) {
+        return `${counter} ${i}${counter > 1 ? 's' : ''} ago`;
+      }
+    }
+    return 'just now';
+  }
+
 
   private refreshStats(): void {
     // Deprecated: stats are loaded dynamically in loadDashboardData

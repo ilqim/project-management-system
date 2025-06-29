@@ -6,6 +6,7 @@ import { StorageService } from './storage.service';
 import { AuthService } from './auth.service';
 import { WorkspaceService } from './workspace.service';
 import { UserRole } from '../models/user.model';
+import { NotificationService } from './notification.service';
 
 @Injectable({
     providedIn: 'root'
@@ -17,7 +18,8 @@ export class ProjectService {
     constructor(
         private storage: StorageService,
         private auth: AuthService,
-        private workspace: WorkspaceService
+        private workspace: WorkspaceService,
+        private notification: NotificationService
     ) {
         this.loadCurrentProject();
     }
@@ -113,6 +115,12 @@ export class ProjectService {
             const projects = this.storage.get<Project[]>('projects') || [];
             projects.push(project);
             this.storage.set('projects', projects);
+
+            this.notification.addNotification(
+                `New project created: "${project.name}"`,
+                'success',
+                project.id
+            );
 
             observer.next(project);
             observer.complete();
@@ -253,6 +261,11 @@ export class ProjectService {
             project.memberCount = project.teamMembers.length;
 
             this.storage.set('projects', projects);
+            this.notification.addNotification(
+                `${user.name} added to project "${project.name}"`,
+                'info',
+                project.id
+            );
             observer.next(true);
             observer.complete();
         });

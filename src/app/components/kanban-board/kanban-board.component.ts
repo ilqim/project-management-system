@@ -136,7 +136,11 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
     if (!task || task.columnId === columnId) return;
 
     if (task.assigneeId !== this.currentUser?.id) {
-      this.notification.addNotification('Only the assignee can move this task', 'warning');
+      this.notification.addNotification(
+        'Only the assignee can move this task',
+        'warning',
+        this.project?.id
+      );
       return;
     }
 
@@ -147,7 +151,8 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
       if (currentCount >= column.wipLimit) {
         this.notification.addNotification(
           `Cannot move task: ${column.name} is at WIP limit (${column.wipLimit})`,
-          'warning'
+          'warning',
+          this.project?.id
         );
         return;
       }
@@ -162,12 +167,13 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
         }
         this.notification.addNotification(
           `Task moved to ${column?.name || columnId}`,
-          'success'
+          'success',
+          this.project?.id
         );
       },
       error: (error: any) => {
         console.error('Error updating task:', error);
-        this.notification.addNotification('Failed to move task', 'error');
+        this.notification.addNotification('Failed to move task', 'error', this.project?.id);
       }
     });
   }
@@ -192,11 +198,15 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: (newTask: Task) => {
         this.tasks.push(newTask);
-        this.notification.addNotification('Task created successfully', 'success');
+        this.notification.addNotification(
+          'Task created successfully',
+          'success',
+          this.project?.id
+        );
       },
       error: (error: any) => {
         console.error('Error creating task:', error);
-        this.notification.addNotification('Failed to create task', 'error');
+        this.notification.addNotification('Failed to create task', 'error', this.project?.id);
       }
     });
   }
@@ -214,11 +224,15 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
     this.taskService.deleteTask(task.id).subscribe({
       next: () => {
         this.tasks = this.tasks.filter(t => t.id !== task.id);
-        this.notification.addNotification('Task deleted successfully', 'success');
+        this.notification.addNotification(
+          'Task deleted successfully',
+          'success',
+          this.project?.id
+        );
       },
       error: (error: any) => {
         console.error('Error deleting task:', error);
-        this.notification.addNotification('Failed to delete task', 'error');
+        this.notification.addNotification('Failed to delete task', 'error', this.project?.id);
       }
     });
   }
