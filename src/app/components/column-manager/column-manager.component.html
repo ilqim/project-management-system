@@ -1,0 +1,11 @@
+<div class="column-manager">
+  <div class="column-list">
+    <div class="column-item" *ngFor="let col of columns">
+      <input [(ngModel)]="col.name" (blur)="save()" />
+    </div>
+  </div>
+  <div class="add-column">
+    <input [(ngModel)]="newColumnName" placeholder="New column name" />
+    <button (click)="addColumn()">Add</button>
+  </div>
+</div>

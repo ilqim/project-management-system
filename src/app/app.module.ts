@@ -28,6 +28,7 @@ import { TeamManagementComponent } from './components/team-management/team-manag
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EditProjectComponent } from './components/edit-project/edit-project.component';
 import { AcceptInviteComponent } from './components/accept-invite/accept-invite.component';
+import { ColumnManagerComponent } from './components/column-manager/column-manager.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { AcceptInviteComponent } from './components/accept-invite/accept-invite.
     ProjectDetailComponent,
     TeamManagementComponent,
     NewProjectComponent,
+    ColumnManagerComponent,
     NewTaskComponent,
     EditProjectComponent,
     AcceptInviteComponent,

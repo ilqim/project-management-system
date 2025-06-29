@@ -1,4 +1,13 @@
 <div class="kanban-board">
+  <button *ngIf="canManageColumns()" (click)="toggleColumnManager()">
+    {{ showColumnManager ? 'Close Column Manager' : 'Manage Columns' }}
+  </button>
+  <app-column-manager
+    *ngIf="showColumnManager"
+    [projectId]="project?.id || null"
+    [columns]="columns"
+    (updated)="onColumnsUpdated($event)"
+  ></app-column-manager>
   <div
     class="column"
     *ngFor="let col of columns"

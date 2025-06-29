@@ -10,7 +10,7 @@ import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
 import { Subscription } from 'rxjs';
 
-const BOARD_COLUMNS: KanbanColumn[] = [
+const DEFAULT_COLUMNS: KanbanColumn[] = [
   { id: 'todo', name: 'Todo', order: 0 },
   { id: 'in-progress', name: 'In Progress', order: 1 },
   { id: 'done', name: 'Done', order: 2 }
@@ -28,6 +28,8 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
   loading = false;
   error: string | null = null;
+
+  showColumnManager = false;
   
   private subscriptions: Subscription[] = [];
 
@@ -42,6 +44,25 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.currentUser = this.auth.getCurrentUser();
     this.loadProject();
+  }
+
+  toggleColumnManager(): void {
+    if (this.canManageColumns()) {
+      this.showColumnManager = !this.showColumnManager;
+    }
+  }
+
+  onColumnsUpdated(cols: KanbanColumn[]): void {
+    this.columns = cols;
+  }
+
+  canManageColumns(): boolean {
+    if (!this.currentUser || !this.project) return false;
+    return (
+      this.currentUser.role === 'admin' ||
+      this.currentUser.id === this.project.ownerId ||
+      this.currentUser.id === this.project.leadId
+    );
   }
 
   ngOnDestroy(): void {
@@ -61,7 +82,7 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
     const currentProject = this.projectService.getCurrentProject();
     if (currentProject && currentProject.id === projectId) {
       this.project = currentProject;
-      this.columns = BOARD_COLUMNS;
+      this.columns = currentProject.columns || DEFAULT_COLUMNS;
       this.loadTasks(projectId);
     } else {
       // If not current project, load it
@@ -70,7 +91,7 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
           const project = projects.find(p => p.id === projectId);
           if (project) {
             this.project = project;
-            this.columns = BOARD_COLUMNS;
+            this.columns = project.columns || DEFAULT_COLUMNS;
             this.projectService.setCurrentProject(project.id);
             this.loadTasks(projectId);
           } else {
