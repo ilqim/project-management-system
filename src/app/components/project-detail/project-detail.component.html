@@ -36,12 +36,17 @@
                     <span class="task-priority" [class]="'priority-' + task.priority">
                       {{ getPriorityText(task.priority) }}
                     </span>
+                    <button
+                      *ngIf="task.reporterId === currentUser?.id || currentUser?.role === UserRole.ADMIN"
+                      class="btn btn-sm"
+                      (click)="editTask(task)"
+                    >Düzenle</button>
                   </div>
                   <div class="task-meta">
                     <span *ngIf="task.dueDate" class="due-date" [class.overdue]="isOverdue(task.dueDate)">
                       Son Tarih: {{ task.dueDate | date:'shortDate' }}
                     </span>
-                    <span class="progress">İlerleme: {{ task.progress }}%</span>
+                    <span class="task-status">Durum: {{ getColumnName(task.columnId) }}</span>
                   </div>
                 </li>
               </ul>

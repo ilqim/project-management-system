@@ -198,6 +198,12 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
             this.loadMemberTasks(this.project.id);
         }
     }
+    
+    getColumnName(columnId: string): string {
+        const columns = this.project?.kanbanColumns || this.project?.columns || [];
+        const col = columns.find(c => c.id === columnId);
+        return col ? col.name : columnId;
+    }
 
     // Yeni görev ekledikten sonra çağrılacak metod
     onTaskAssigned(): void {

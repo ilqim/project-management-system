@@ -121,6 +121,13 @@ export class TasksComponent implements OnInit, OnDestroy {
     });
   }
 
+  getColumnName(projectId: string, columnId: string): string {
+    const proj = this.projects.find(p => p.id === projectId);
+    const columns = proj?.kanbanColumns || proj?.columns || [];
+    const column = columns.find(c => c.id === columnId);
+    return column ? column.name : columnId;
+  }
+
   private updateAvailableTags(): void {
     this.availableTags = [...this.tagOptions];
   }

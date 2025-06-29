@@ -41,6 +41,12 @@
 .task-meta {
   font-size: 0.85rem;
   color: #555;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.task-status {
+  font-weight: 500;
 }
 
 .description {

@@ -31,6 +31,7 @@
         </div>
         <div class="task-meta">
           <span *ngIf="task.assigneeId">Atanan: {{ getUserName(task.assigneeId) }}</span>
+          <span class="task-status">Durum: {{ getColumnName(task.projectId, task.columnId) }}</span>
         </div>
         <p class="description">{{ task.description }}</p>
         <div class="task-tags" *ngIf="task.tags && task.tags.length">
@@ -59,6 +60,9 @@
           <i class="fas fa-link" *ngIf="task.dependencies?.length" title="Bağımlı görev"></i>
           <span class="project">({{ getProjectName(task.projectId) }})</span>
           <button *ngIf="task.reporterId === currentUser?.id" class="btn btn-sm" (click)="editTask(task)">Düzenle</button>
+        </div>
+        <div class="task-meta">
+          <span class="task-status">Durum: {{ getColumnName(task.projectId, task.columnId) }}</span>
         </div>
         <p class="description">{{ task.description }}</p>
         <div class="task-tags" *ngIf="task.tags && task.tags.length">
@@ -95,6 +99,7 @@
           <span *ngIf="currentUser?.role === UserRole.ADMIN">
             Veren: {{ getUserName(task.reporterId) }}
           </span>
+          <span class="task-status">Durum: {{ getColumnName(task.projectId, task.columnId) }}</span>
         </div>
         <p class="description">{{ task.description }}</p>
         <div class="task-tags" *ngIf="task.tags && task.tags.length">

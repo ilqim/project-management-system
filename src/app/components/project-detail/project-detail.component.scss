@@ -163,6 +163,11 @@
   color: #666;
 }
 
+.task-status {
+  color: #28a745;
+  font-weight: 500;
+}
+
 .due-date {
   &.overdue {
     color: #dc3545;
