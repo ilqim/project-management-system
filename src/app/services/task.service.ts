@@ -106,7 +106,7 @@ export class TaskService {
         : null;
       const message = assigneeName
         ? `${assigneeName} kişisine yeni görev verildi: "${task.title}"`
-        : `Yeni görev oluşturuldu: "${task.title}"`;
+        : `"${task.title}" görevi oluşturuldu`;
       this.notification.addNotification(message, 'success', task.projectId);
       observer.next(task);
       observer.complete();
@@ -139,8 +139,13 @@ export class TaskService {
       
       // Check if task moved between columns
       if (updates.columnId && updates.columnId !== oldTask.columnId) {
+        const columnName = this.project.getColumnName(oldTask.projectId, updates.columnId);
+        const assigneeName = oldTask.assigneeId
+          ? this.auth.getUserById(oldTask.assigneeId)?.name
+          : null;
+        const userPart = assigneeName ? `${assigneeName} kullanıcısının ` : '';
         this.notification.addNotification(
-          `Görev "${oldTask.title}" ${updates.columnId} sütununa taşındı`,
+          `${userPart}"${oldTask.title}" görevi ${columnName} sütununa taşındı`,
           'info',
           oldTask.projectId
         );

@@ -204,6 +204,14 @@ export class ProjectService {
         return this.currentProjectSubject.value;
     }
 
+    getColumnName(projectId: string, columnId: string): string {
+        const projects = this.storage.get<Project[]>('projects') || [];
+        const project = projects.find(p => p.id === projectId);
+        const columns = project?.kanbanColumns || project?.columns || [];
+        const column = columns.find(c => c.id === columnId);
+        return column ? column.name : columnId;
+    }
+
     updateColumns(projectId: string, columns: KanbanColumn[]): Observable<boolean> {
         return this.updateProject(projectId, {
             columns: columns,

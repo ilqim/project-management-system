@@ -165,8 +165,12 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
         if (taskIndex !== -1) {
           this.tasks[taskIndex] = updatedTask;
         }
+        const assigneeName = updatedTask.assigneeId
+          ? this.auth.getUserById(updatedTask.assigneeId)?.name
+          : null;
+        const userPart = assigneeName ? `${assigneeName} kullanıcısının ` : '';
         this.notification.addNotification(
-          `Görev ${column?.name || columnId} sütununa taşındı`,
+          `${userPart}"${updatedTask.title}" görevi ${column?.name || columnId} sütununa taşındı`,
           'success',
           this.project?.id
         );
@@ -197,12 +201,16 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
       columnId
     }).subscribe({
       next: (newTask: Task) => {
-        this.tasks.push(newTask);
-        this.notification.addNotification(
-          'Görev başarıyla oluşturuldu',
-          'success',
-          this.project?.id
-        );
+          this.tasks.push(newTask);
+          const assigneeName = newTask.assigneeId
+            ? this.auth.getUserById(newTask.assigneeId)?.name
+            : null;
+          const userPart = assigneeName ? `${assigneeName} kullanıcısı için ` : '';
+          this.notification.addNotification(
+            `${userPart}"${newTask.title}" görevi oluşturuldu`,
+            'success',
+            this.project?.id
+          );
       },
       error: (error: any) => {
         console.error('Error creating task:', error);
