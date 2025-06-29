@@ -19,6 +19,7 @@ interface Activity {
   text: string;
   time: string;
   iconClass: string;
+  exactTime: string;
 }
 
 interface UpcomingTask {
@@ -112,7 +113,8 @@ export class DashboardComponent implements OnInit {
       id: n.id,
       text: n.message,
       time: this.getTimeAgo(new Date(n.timestamp)),
-      iconClass: this.getIconForType(n.type)
+      iconClass: this.getIconForType(n.type),
+      exactTime: new Date(n.timestamp).toLocaleString('tr-TR')
     };
   }
 
@@ -160,21 +162,27 @@ export class DashboardComponent implements OnInit {
 
   private getTimeAgo(date: Date): string {
     const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-    const intervals: { [key: string]: number } = {
-      year: 31536000,
-      month: 2592000,
-      week: 604800,
-      day: 86400,
-      hour: 3600,
-      minute: 60
-    };
-    for (const i in intervals) {
-      const counter = Math.floor(seconds / intervals[i]);
-      if (counter > 0) {
-        return `${counter} ${i}${counter > 1 ? 's' : ''} ago`;
+    const units = [
+      { label: 'yıl', value: 31536000 },
+      { label: 'ay', value: 2592000 },
+      { label: 'hafta', value: 604800 },
+      { label: 'gün', value: 86400 },
+      { label: 'saat', value: 3600 },
+      { label: 'dakika', value: 60 }
+    ];
+
+    let remaining = seconds;
+    const parts: string[] = [];
+    for (const unit of units) {
+      const amount = Math.floor(remaining / unit.value);
+      if (amount > 0) {
+        parts.push(`${amount} ${unit.label}`);
+        remaining -= amount * unit.value;
+        if (parts.length === 2) break;
       }
     }
-    return 'just now';
+    if (parts.length === 0) return 'az önce';
+    return `${parts.join(' ')} önce`;
   }
 
 
