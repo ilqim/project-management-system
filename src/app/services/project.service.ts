@@ -345,6 +345,14 @@ export class ProjectService {
             invites.push(invite);
             this.storage.set('projectInvites', invites);
 
+            const projects = this.storage.get<Project[]>('projects') || [];
+            const project = projects.find(p => p.id === projectId);
+            const projectName = project ? project.name : projectId;
+            this.notification.addNotification(
+                `${user.name} sizi "${projectName}" projesine davet etti`,
+                'info',
+                projectId
+            );
             observer.next(invite);
             observer.complete();
         });

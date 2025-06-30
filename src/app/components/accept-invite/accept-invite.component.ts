@@ -64,7 +64,9 @@ export class AcceptInviteComponent implements OnInit {
       this.invites = this.invites.filter(i => i.id !== invite.id);
     });
   }
-  
+  goBack(): void {
+    this.router.navigate(['/dashboard']);
+  }
   private enrichInvites(invites: ProjectInvite[]): InviteDetails[] {
     return invites
       .map(invite => {

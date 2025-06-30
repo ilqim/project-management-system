@@ -78,7 +78,11 @@ export class DashboardComponent implements OnInit {
     this.projectService.getProjects().subscribe(projects => {
       const activeProjects = projects.filter(p => p.status === 'active').length;
       this.taskService.getTasks().subscribe(tasks => {
-        const openTasks = tasks.filter(t => !t.completedAt && t.columnId !== 'done').length;
+        let openTasksList = tasks.filter(t => !t.completedAt && t.columnId !== 'done');
+        if (this.currentUser?.role === UserRole.DEVELOPER) {
+          openTasksList = openTasksList.filter(t => t.assigneeId === this.currentUser?.id);
+        }
+        const openTasks = openTasksList.length;
         const completedTasks = tasks.filter(t => t.completedAt || t.columnId === 'done').length;
         const teamMembers = this.auth.getAllUsers().length;
 

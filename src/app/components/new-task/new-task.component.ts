@@ -5,7 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { ProjectService } from '../../services/project.service';
 import { User, UserRole } from '../../models/user.model';
 import { Project } from '../../models/project.model'; // varsa project tipi için
-import { Task } from '../../models/task.model';
+import { Task, TaskPriority } from '../../models/task.model';
 
 @Component({
   selector: 'app-new-task',
@@ -19,6 +19,7 @@ export class NewTaskComponent implements OnInit {
   selectedTags: string[] = [];
   assigneeId: string | null = null;
   dueDate: string | null = null;
+  priority: TaskPriority = TaskPriority.MEDIUM;
   isEditMode = false;
   taskId: string | null = null;
   returnUrl: string | null = null;
@@ -27,6 +28,7 @@ export class NewTaskComponent implements OnInit {
   currentUser: User | null = null;
   availableTasks: Task[] = [];
   selectedDependencies: string[] = [];
+  TaskPriority = TaskPriority;
 
   private roleHierarchy = [
     UserRole.VIEWER,
@@ -60,7 +62,7 @@ export class NewTaskComponent implements OnInit {
         this.selectedTags = [...task.tags];
         this.assigneeId = task.assigneeId || null;
         this.dueDate = task.dueDate ? new Date(task.dueDate).toISOString().substring(0,10) : null;
-
+        this.priority = task.priority || TaskPriority.MEDIUM;
         this.projectService.getProject(task.projectId).subscribe(p => {
           if (p) {
             this.projectService.setCurrentProject(p.id);
@@ -100,7 +102,7 @@ export class NewTaskComponent implements OnInit {
     const memberIds = project.teamMembers || [];
     this.users = memberIds
       .map((id: string) => this.authService.getUserById(id))
-      .filter((u: User | undefined): u is User => !!u)
+      .filter((u: User | undefined): u is User => !!u && u.id !== this.currentUser?.id)
       .filter(user => this.canAssignTo(user));
 
     const preselectedAssignee = this.route.snapshot.queryParamMap.get('assigneeId');
@@ -135,7 +137,8 @@ export class NewTaskComponent implements OnInit {
       title: this.title,
       description: this.description,
       tags: this.selectedTags,
-      dependencies: this.selectedDependencies
+      dependencies: this.selectedDependencies,
+      priority: this.priority
     };
 
     if (this.assigneeId) {

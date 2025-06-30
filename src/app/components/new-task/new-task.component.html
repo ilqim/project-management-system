@@ -19,6 +19,15 @@
       </select>
     </div>
     <div class="form-group">
+      <label for="priority">Öncelik</label>
+      <select id="priority" name="priority" [(ngModel)]="priority">
+        <option [ngValue]="TaskPriority.LOW">Düşük</option>
+        <option [ngValue]="TaskPriority.MEDIUM">Orta</option>
+        <option [ngValue]="TaskPriority.HIGH">Yüksek</option>
+        <option [ngValue]="TaskPriority.URGENT">Acil</option>
+      </select>
+    </div>
+    <div class="form-group">
       <label for="dueDate">Bitiş Tarihi</label>
       <input id="dueDate" name="dueDate" type="date" [(ngModel)]="dueDate" />
     </div>
