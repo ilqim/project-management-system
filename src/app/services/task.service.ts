@@ -174,7 +174,8 @@ export class TaskService {
   completeTask(taskId: string): Observable<Task> {
     return this.updateTask(taskId, {
       progress: 100,
-      completedAt: new Date()
+      completedAt: new Date(),
+      columnId: 'done'
     });
   }
 
