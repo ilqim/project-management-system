@@ -1,24 +1,150 @@
 .accept-invite {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   text-align: center;
-  margin-top: 2rem;
+
+  h2 {
+    color: #2d3748;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
+  > p {
+    color: #4a5568;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
 .invite-card {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  background: white;
+  border: none;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
   text-align: left;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  h3 {
+    margin: 0 0 1rem 0;
+    color: #2d3748;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  p {
+    color: #4a5568;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+
+    &:last-of-type {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .role {
+    display: inline-block;
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    color: #744210;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+
+  .actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 12px;
+
+    button {
+      flex: 1;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+
+      &:first-child {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
+        }
+      }
+
+      &:last-child {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(250, 112, 154, 0.4);
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(250, 112, 154, 0.6);
+        }
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
 }
 
-.invite-card h3 {
-  margin-top: 0;
-}
-
-.invite-card .actions {
-  margin-top: 0.5rem;
-}
-
-.invite-card button {
-  margin-right: 0.5rem;
+ul {
+  list-style: none;
+  padding: 0;
 }

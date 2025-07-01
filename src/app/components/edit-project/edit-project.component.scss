@@ -1,34 +1,303 @@
 .edit-project {
-  max-width: 500px;
-  margin: 0 auto;
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+  }
+
+  h2 {
+    color: #2d3748;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 2px;
+    }
+  }
+
+  form {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
 }
 
 .form-group {
-  margin-bottom: 1rem;
-}
+  margin-bottom: 2rem;
+  position: relative;
 
-input, textarea {
-  width: 100%;
+  label {
+    display: block;
+    margin-bottom: 0.75rem;
+    color: #2d3748;
+    font-weight: 600;
+    font-size: 1.1rem;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 20px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 2px;
+    }
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: #f8fafc;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      transform: translateY(-1px);
+    }
+
+    &:hover {
+      border-color: #cbd5e0;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+    line-height: 1.5;
+  }
+
+  .previous {
+    font-size: 0.875rem;
+    color: #718096;
+    margin-top: 0.5rem;
+    padding: 8px 12px;
+    background: #f0f4f8;
+    border-radius: 8px;
+    border-left: 4px solid #4a90e2;
+    font-style: italic;
+    position: relative;
+
+    &::before {
+      content: '💡';
+      margin-right: 8px;
+    }
+  }
 }
 
 .member-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 2px dashed #e2e8f0;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #cbd5e0;
+    background: #f1f5f9;
+  }
+
+  .member-item {
+    padding: 12px 18px;
+    border: 2px solid #e2e8f0;
+    cursor: pointer;
+    border-radius: 25px;
+    background: white;
+    color: #4a5568;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-color: #667eea;
+
+      &::before {
+        left: 100%;
+      }
+    }
+
+    &.selected {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-color: #667eea;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      transform: scale(1.05);
+
+      &:hover {
+        transform: scale(1.08) translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+    }
+  }
 }
 
-.member-item {
-  padding: 0.25rem 0.5rem;
-  border: 1px solid #ccc;
+// Düğme stilleri
+.btn {
+  padding: 14px 32px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  border-radius: 4px;
-  background-color: white;
+  transition: all 0.3s ease;
+  margin-right: 1rem;
+  margin-top: 2rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  &.btn-primary {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &:not(.btn-primary) {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    color: #2d3748;
+    box-shadow: 0 4px 15px rgba(168, 237, 234, 0.4);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(168, 237, 234, 0.6);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
 }
 
-.member-item.selected {
-  background-color: #cce5ff;
+// Responsive tasarım
+@media (max-width: 768px) {
+  .edit-project {
+    margin: 1rem;
+    padding: 1.5rem;
+    max-width: calc(100% - 2rem);
+
+    h2 {
+      font-size: 1.8rem;
+    }
+
+    form {
+      padding: 1.5rem;
+    }
+
+    .member-list {
+      .member-item {
+        padding: 10px 14px;
+        font-size: 0.9rem;
+      }
+    }
+
+    .btn {
+      width: 100%;
+      margin-right: 0;
+      margin-bottom: 1rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
 }
-.previous {
-  font-size: 0.8rem;
-  color: #6b7280;
+
+// Form animasyonları
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-group {
+  animation: slideInUp 0.5s ease-out;
+  animation-fill-mode: both;
+
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  &:nth-child(4) { animation-delay: 0.4s; }
+  &:nth-child(5) { animation-delay: 0.5s; }
 }

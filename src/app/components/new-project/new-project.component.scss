@@ -1,30 +1,113 @@
 .new-project {
-  max-width: 500px;
-  margin: 0 auto;
-}
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', sans-serif;
+  color: #1f2937;
 
-.form-group {
-  margin-bottom: 1rem;
-}
-
-input, textarea, select {
-  width: 100%;
+  h2 {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    color: #111827;
   }
 
-.member-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
 
-.member-item {
-  padding: 0.25rem 0.5rem;
-  border: 1px solid #ccc;
-  cursor: pointer;
-  border-radius: 4px;
-  background-color: white;
-}
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
 
-.member-item.selected {
-  background-color: #cce5ff;
+    label {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    input,
+    textarea {
+      padding: 0.7rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background-color: #f9fafb;
+
+      &:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+  }
+
+  .member-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    .member-item {
+      background-color: #e5e7eb;
+      color: #1f2937;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &.selected {
+        background-color: #6366f1;
+        color: white;
+      }
+
+      &:hover {
+        background-color: #d1d5db;
+      }
+    }
+  }
+
+  .btn {
+    padding: 0.7rem 1.4rem;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &.btn-primary {
+      background-color: #10b981;
+      color: white;
+
+      &:hover {
+        background-color: #059669;
+      }
+    }
+
+    &:not(.btn-primary) {
+      background-color: #e5e7eb;
+      color: #1f2937;
+
+      &:hover {
+        background-color: #d1d5db;
+      }
+    }
+
+    & + .btn {
+      margin-left: 0.75rem;
+    }
+  }
 }

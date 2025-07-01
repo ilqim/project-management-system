@@ -1,12 +1,94 @@
-.invite-team {
-  max-width: 400px;
-  margin: 2rem auto;
+:host {
+  display: block;
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
-.form-group {
+.invite-team-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.75rem;
   margin-bottom: 1rem;
 }
 
-.btn {
-  margin-right: 0.5rem;
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+  }
+
+  button {
+    background-color: #6366f1;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #4f46e5;
+    }
+
+    &:disabled {
+      background-color: #d1d5db;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.invited-users {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .user-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.95rem;
+
+    .email {
+      color: #374151;
+    }
+
+    .status {
+      font-size: 0.85rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      background-color: #f3f4f6;
+      color: #6b7280;
+    }
+  }
 }

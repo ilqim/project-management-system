@@ -52,7 +52,6 @@ export class TasksComponent implements OnInit, OnDestroy {
       this.tasksSub = this.taskService.tasks$.subscribe(tasks => {
         this.tasks = tasks.filter(t => projectIds.includes(t.projectId));
         this.updateAvailableTags();
-        this.updateStatusOptions();
         this.applyRoleFilter();
       });
     });
@@ -68,7 +67,15 @@ export class TasksComponent implements OnInit, OnDestroy {
     if (this.currentUser.role === UserRole.DEVELOPER) {
       base = base.filter(t => t.assigneeId === this.currentUser!.id);
     }
-    this.filteredTasks = this.applyFilters(base);
+    const forStatus = base.filter(t =>
+      (!this.selectedProject || t.projectId === this.selectedProject) &&
+      (!this.selectedTag || t.tags.includes(this.selectedTag))
+    );
+    this.updateStatusOptions(forStatus);
+
+    this.filteredTasks = forStatus.filter(t =>
+      (!this.selectedStatus || this.getColumnName(t.projectId, t.columnId) === this.selectedStatus)
+    );
   }
 
   onTagChange(): void {
@@ -83,20 +90,15 @@ export class TasksComponent implements OnInit, OnDestroy {
     this.applyRoleFilter();
   }
 
-  private applyFilters(tasks: Task[]): Task[] {
-    return tasks.filter(t =>
-      (!this.selectedProject || t.projectId === this.selectedProject) &&
-      (!this.selectedTag || t.tags.includes(this.selectedTag)) &&
-      (!this.selectedStatus || this.getColumnName(t.projectId, t.columnId) === this.selectedStatus)
-    );
-  }
-
-  private updateStatusOptions(): void {
+  private updateStatusOptions(tasks: Task[]): void {
     const set = new Set<string>();
-    for (const t of this.tasks) {
+    for (const t of tasks) {
       set.add(this.getColumnName(t.projectId, t.columnId));
     }
     this.statusOptions = Array.from(set);
+    if (!this.statusOptions.includes(this.selectedStatus)) {
+      this.selectedStatus = '';
+    }
   }
 
   editTask(task: Task): void {

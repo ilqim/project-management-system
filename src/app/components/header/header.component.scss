@@ -1,19 +1,96 @@
 .app-header {
   display: flex;
   align-items: center;
-  padding: 10px 20px;
-  background: #3f51b5;
-  color: #fff;
+  padding: 0 2rem;
+  height: 70px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+  position: relative;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover::before {
+    opacity: 1;
+    animation: shimmer 2s infinite;
+  }
 }
 
 .app-name {
-  font-weight: bold;
-  margin-right: 20px;
+  font-weight: 800;
+  font-size: 1.5rem;
+  margin-right: 2rem;
   cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(45deg, #fff, #f0f8ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #fff, #f0f8ff);
+    transition: width 0.3s ease;
+    border-radius: 1px;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+    
+    &::after {
+      width: 100%;
+    }
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .workspace-name {
-  font-style: italic;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '🏢';
+    margin-right: 8px;
+    font-size: 0.9rem;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
 }
 
 .spacer {
@@ -21,10 +98,228 @@
 }
 
 button {
-  background: transparent;
-  border: none;
-  color: inherit;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
   cursor: pointer;
-  margin-left: 10px;
-  font-size: 1.2rem;
+  margin-left: 1rem;
+  font-size: 1rem;
+  padding: 10px 16px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &.theme-toggle {
+    font-size: 1.2rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(15deg) scale(1.1);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    &:active {
+      transform: rotate(15deg) scale(1.05);
+    }
+  }
+
+  &.logout {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    border: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+
+    &:hover {
+      background: linear-gradient(135deg, #ff5252 0%, #e53e3e 100%);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+    }
+
+    &::before {
+      content: '👋';
+      margin-right: 6px;
+    }
+  }
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-left: 1rem;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  transition: all 0.3s ease;
+
+  &::before {
+    content: '👤';
+    margin-right: 8px;
+    font-size: 0.9rem;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// Search component integration (if needed)
+::ng-deep app-search {
+  margin-left: 2rem;
+  
+  .search-container {
+    position: relative;
+    
+    input {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 10px 16px 10px 40px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      min-width: 250px;
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      &:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    &::before {
+      content: '🔍';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.9rem;
+      z-index: 1;
+    }
+  }
+}
+
+// Animasyonlar
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+// Dark theme support
+:host-context(.dark-theme) .app-header {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  box-shadow: 0 4px 20px rgba(45, 55, 72, 0.4);
+
+  .app-name {
+    background: linear-gradient(45deg, #e2e8f0, #cbd5e0);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  button.logout {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  }
+}
+
+// Responsive tasarım
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 1rem;
+    height: 60px;
+    flex-wrap: wrap;
+
+    .app-name {
+      font-size: 1.3rem;
+      margin-right: 1rem;
+    }
+
+    .workspace-name {
+      display: none;
+    }
+
+    .user-name {
+      display: none;
+    }
+
+    button {
+      margin-left: 0.5rem;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+
+      &.theme-toggle {
+        width: 36px;
+        height: 36px;
+      }
+    }
+
+    ::ng-deep app-search {
+      margin-left: 1rem;
+      
+      .search-container input {
+        min-width: 150px;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    padding: 0 0.5rem;
+
+    ::ng-deep app-search {
+      display: none;
+    }
+  }
 }

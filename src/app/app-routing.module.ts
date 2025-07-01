@@ -32,7 +32,7 @@ const routes: Routes = [
   { path: 'projects/new', component: NewProjectComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD] } },
   { path: 'tasks/new', component: NewTaskComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD] } },
   { path: 'projects/:id', component: ProjectDetailComponent, canActivate: [AuthGuard] },
-  { path: 'tasks', component: TasksComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD, UserRole.DEVELOPER] } },
+  { path: 'tasks', component: TasksComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD, UserRole.DEVELOPER, UserRole.VIEWER] } },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'team/invite', component: InviteTeamComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD] } },
   { path: 'team/manage', component: TeamManagementComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: [UserRole.ADMIN, UserRole.PROJECT_LEAD] } },

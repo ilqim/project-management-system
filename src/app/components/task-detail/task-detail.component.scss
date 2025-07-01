@@ -1,3 +1,29 @@
 .task-detail {
-  padding: 1rem;
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  font-family: 'Segoe UI', sans-serif;
+  color: #1f2937;
+  max-width: 600px;
+  margin: 2rem auto;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #111827;
+  }
+
+  p {
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+    color: #374151;
+
+    strong {
+      color: #111827;
+      margin-right: 0.3rem;
+    }
+  }
 }

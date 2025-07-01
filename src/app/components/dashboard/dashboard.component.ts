@@ -9,8 +9,7 @@ import { NotificationService, Notification } from '../../services/notification.s
 
 interface StatsData {
   activeProjects: number;
-  openTasks: number;
-  completedTasks: number;
+  totalTasks: number;
   teamMembers: number;
 }
 
@@ -42,8 +41,7 @@ export class DashboardComponent implements OnInit {
   
   statsData: StatsData = {
     activeProjects: 0,
-    openTasks: 0,
-    completedTasks: 0,
+    totalTasks: 0,
     teamMembers: 0
   };
 
@@ -78,18 +76,16 @@ export class DashboardComponent implements OnInit {
     this.projectService.getProjects().subscribe(projects => {
       const activeProjects = projects.filter(p => p.status === 'active').length;
       this.taskService.getTasks().subscribe(tasks => {
-        let openTasksList = tasks.filter(t => !t.completedAt && t.columnId !== 'done');
+        let taskList = tasks;
         if (this.currentUser?.role === UserRole.DEVELOPER) {
-          openTasksList = openTasksList.filter(t => t.assigneeId === this.currentUser?.id);
+          taskList = taskList.filter(t => t.assigneeId === this.currentUser?.id);
         }
-        const openTasks = openTasksList.length;
-        const completedTasks = tasks.filter(t => t.completedAt || t.columnId === 'done').length;
+        const totalTasks = taskList.length;
         const teamMembers = this.auth.getAllUsers().length;
 
         this.statsData = {
           activeProjects,
-          openTasks,
-          completedTasks,
+          totalTasks,
           teamMembers
         };
       });
@@ -282,11 +278,8 @@ export class DashboardComponent implements OnInit {
 📊 RAPOR ÖZETİ 📊
 
 🎯 Aktif Projeler: ${this.statsData.activeProjects}
-📋 Açık Görevler: ${this.statsData.openTasks}
-✅ Tamamlanan Görevler: ${this.statsData.completedTasks}
+📋 Görevler: ${this.statsData.totalTasks}
 👥 Takım Üyeleri: ${this.statsData.teamMembers}
-
-📈 Verimlilik: %${Math.round((this.statsData.completedTasks / (this.statsData.completedTasks + this.statsData.openTasks)) * 100)}
 
 Detaylı raporlar sayfası geliştirme aşamasında...
     `;
@@ -329,11 +322,6 @@ Detaylı raporlar sayfası geliştirme aşamasında...
         case 'tasks':
           this.router.navigate(['/tasks']).catch(() => {
             alert('Görevler sayfası henüz hazır değil.');
-          });
-          break;
-        case 'completed':
-          this.router.navigate(['/tasks'], { queryParams: { status: 'completed' } }).catch(() => {
-            alert('Tamamlanan görevler sayfası henüz hazır değil.');
           });
           break;
         case 'team':
