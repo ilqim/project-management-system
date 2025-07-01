@@ -15,125 +15,51 @@
         <option *ngFor="let tag of availableTags" [value]="tag">{{ tag }}</option>
       </select>
     </label>
+    <label>
+      Durum:
+      <select [(ngModel)]="selectedStatus" (change)="onStatusChange()">
+        <option value="">Tümü</option>
+        <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+      </select>
+    </label>
   </div>
-  <!-- Section for tasks created/assigned by the project lead -->
-  <ng-container *ngIf="currentUser?.role === UserRole.PROJECT_LEAD">
-    <h2>Verdiğim Görevler</h2>
-    <div *ngIf="assignedTasks.length === 0">Gösterilecek görev bulunmuyor.</div>
-    <ul class="task-list" *ngIf="assignedTasks.length > 0">
-      <li *ngFor="let task of assignedTasks" class="task-item">
-        <div class="task-header">
-          <input
-            type="checkbox"
-            *ngIf="task.assigneeId === currentUser?.id"
-            [checked]="task.completedAt || task.columnId === 'done'"
-            [disabled]="!canToggleComplete(task)"
-            (change)="toggleComplete(task)"
-          />
-          <strong>{{ task.title }}</strong>
-          <i class="fas fa-link" *ngIf="task.dependencies?.length" title="Bağımlı görev"></i>
-          <span class="project">({{ getProjectName(task.projectId) }})</span>
-          <button *ngIf="task.reporterId === currentUser?.id" class="btn btn-sm" (click)="editTask(task)">Düzenle</button>
-        </div>
-        <div class="task-meta">
-          <span *ngIf="task.assigneeId">Atanan: {{ getUserName(task.assigneeId) }}</span>
-          <span class="task-status">Durum: {{ getColumnName(task.projectId, task.columnId) }}</span>
-        </div>
-        <p class="description">{{ task.description }}</p>
-        <div class="task-tags" *ngIf="task.tags && task.tags.length">
-          <span class="tag" *ngFor="let tag of task.tags">{{ tag }}</span>
-        </div>
-        <div class="task-dates">
-          <span>
-            <i class="fas fa-calendar-plus"></i>
-            {{ task.createdAt | date:'shortDate' }}
-          </span>
-          <span *ngIf="task.dueDate">
-            <i class="fas fa-calendar-check"></i>
-            {{ task.dueDate | date:'shortDate' }}
-          </span>
-        </div>
-      </li>
-    </ul>
 
-    <h2>Kendi Görevlerim</h2>
-    <div *ngIf="myTasks.length === 0">Görev bulunmuyor.</div>
-    <ul class="task-list" *ngIf="myTasks.length > 0">
-      <li *ngFor="let task of myTasks" class="task-item">
-        <div class="task-header">
-          <input
-            type="checkbox"
-            *ngIf="task.assigneeId === currentUser?.id"
-            [checked]="task.completedAt || task.columnId === 'done'"
-            [disabled]="!canToggleComplete(task)"
-            (change)="toggleComplete(task)"
-          />
-          <strong>{{ task.title }}</strong>
-          <i class="fas fa-link" *ngIf="task.dependencies?.length" title="Bağımlı görev"></i>
-          <span class="project">({{ getProjectName(task.projectId) }})</span>
-          <button *ngIf="task.reporterId === currentUser?.id" class="btn btn-sm" (click)="editTask(task)">Düzenle</button>
-        </div>
-        <div class="task-meta">
-          <span class="task-status">Durum: {{ getColumnName(task.projectId, task.columnId) }}</span>
-        </div>
-        <p class="description">{{ task.description }}</p>
-        <div class="task-tags" *ngIf="task.tags && task.tags.length">
-          <span class="tag" *ngFor="let tag of task.tags">{{ tag }}</span>
-        </div>
-        <div class="task-dates">
-          <span>
-            <i class="fas fa-calendar-plus"></i>
-            {{ task.createdAt | date:'shortDate' }}
-          </span>
-          <span *ngIf="task.dueDate">
-            <i class="fas fa-calendar-check"></i>
-            {{ task.dueDate | date:'shortDate' }}
-          </span>
-        </div>
-      </li>
-    </ul>
-  </ng-container>
-
-  <!-- Default view for other roles -->
-  <ng-container *ngIf="currentUser && currentUser.role !== UserRole.PROJECT_LEAD">
-    <div *ngIf="filteredTasks.length === 0">Gösterilecek görev bulunmuyor.</div>
-    <ul class="task-list" *ngIf="filteredTasks.length > 0">
-      <li *ngFor="let task of filteredTasks" class="task-item">
-        <div class="task-header">
-          <input
-            type="checkbox"
-            *ngIf="task.assigneeId === currentUser?.id"
-            [checked]="task.completedAt || task.columnId === 'done'"
-            [disabled]="!canToggleComplete(task)"
-            (change)="toggleComplete(task)"
-          />
-          <strong>{{ task.title }}</strong>
-          <i class="fas fa-link" *ngIf="task.dependencies?.length" title="Bağımlı görev"></i>
-          <span class="project">({{ getProjectName(task.projectId) }})</span>
-          <button *ngIf="task.reporterId === currentUser?.id" class="btn btn-sm" (click)="editTask(task)">Düzenle</button>
-        </div>
-        <div class="task-meta">
-          <span *ngIf="task.assigneeId">Atanan: {{ getUserName(task.assigneeId) }}</span>
-          <span *ngIf="currentUser?.role === UserRole.ADMIN">
-            Veren: {{ getUserName(task.reporterId) }}
-          </span>
-          <span class="task-status">Durum: {{ getColumnName(task.projectId, task.columnId) }}</span>
-        </div>
-        <p class="description">{{ task.description }}</p>
-        <div class="task-tags" *ngIf="task.tags && task.tags.length">
-          <span class="tag" *ngFor="let tag of task.tags">{{ tag }}</span>
-        </div>
-        <div class="task-dates">
-          <span>
-            <i class="fas fa-calendar-plus"></i>
-            {{ task.createdAt | date:'shortDate' }}
-          </span>
-          <span *ngIf="task.dueDate">
-            <i class="fas fa-calendar-check"></i>
-            {{ task.dueDate | date:'shortDate' }}
-          </span>
-        </div>
-      </li>
-    </ul>
-  </ng-container>
+  <div *ngIf="filteredTasks.length === 0">Gösterilecek görev bulunmuyor.</div>
+  <ul class="task-list" *ngIf="filteredTasks.length > 0">
+    <li *ngFor="let task of filteredTasks" class="task-item">
+      <div class="task-header">
+        <input
+          type="checkbox"
+          [checked]="task.completedAt || task.columnId === 'done'"
+          [disabled]="!canToggleComplete(task)"
+          (change)="toggleComplete(task)"
+        />
+        <strong>{{ task.title }}</strong>
+        <i class="fas fa-link" *ngIf="task.dependencies?.length" title="Bağımlı görev"></i>
+        <span class="project">({{ getProjectName(task.projectId) }})</span>
+        <button *ngIf="task.reporterId === currentUser?.id" class="btn btn-sm" (click)="editTask(task)">Düzenle</button>
+      </div>
+      <div class="task-meta">
+        <span *ngIf="task.assigneeId">Atanan: {{ getUserName(task.assigneeId) }}</span>
+        <span *ngIf="currentUser?.role === UserRole.ADMIN">
+          Veren: {{ getUserName(task.reporterId) }}
+        </span>
+        <span class="task-status">Durum: {{ getColumnName(task.projectId, task.columnId) }}</span>
+      </div>
+      <p class="description">{{ task.description }}</p>
+      <div class="task-tags" *ngIf="task.tags && task.tags.length">
+        <span class="tag" *ngFor="let tag of task.tags">{{ tag }}</span>
+      </div>
+      <div class="task-dates">
+        <span>
+          <i class="fas fa-calendar-plus"></i>
+          {{ task.createdAt | date:'shortDate' }}
+        </span>
+        <span *ngIf="task.dueDate">
+          <i class="fas fa-calendar-check"></i>
+          {{ task.dueDate | date:'shortDate' }}
+        </span>
+      </div>
+    </li>
+  </ul>
 </div>

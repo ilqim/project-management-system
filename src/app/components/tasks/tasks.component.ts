@@ -17,8 +17,8 @@ export class TasksComponent implements OnInit, OnDestroy {
   tasks: Task[] = [];
   filteredTasks: Task[] = [];
   currentUser: User | null = null;
-  myTasks: Task[] = [];
-  assignedTasks: Task[] = [];
+  statusOptions: string[] = [];
+  selectedStatus = '';
   projects: Project[] = [];
   tagOptions = ['Bug', 'Feature', 'High Priority', 'Improvement', 'Documentation', 'Testing'];
   availableTags: string[] = [];
@@ -52,6 +52,7 @@ export class TasksComponent implements OnInit, OnDestroy {
       this.tasksSub = this.taskService.tasks$.subscribe(tasks => {
         this.tasks = tasks.filter(t => projectIds.includes(t.projectId));
         this.updateAvailableTags();
+        this.updateStatusOptions();
         this.applyRoleFilter();
       });
     });
@@ -60,44 +61,14 @@ export class TasksComponent implements OnInit, OnDestroy {
   private applyRoleFilter(): void {
     if (!this.currentUser) {
       this.filteredTasks = [];
-      this.myTasks = [];
-      this.assignedTasks = [];
       return;
     }
 
-    switch (this.currentUser.role) {
-      case UserRole.ADMIN:
-        this.myTasks = this.tasks;
-        this.assignedTasks = this.tasks;
-        break;
-      case UserRole.PROJECT_LEAD:
-        this.assignedTasks = this.tasks.filter(t => t.reporterId === this.currentUser!.id);
-        this.myTasks = this.tasks.filter(t => t.assigneeId === this.currentUser!.id);
-        break;
-      case UserRole.DEVELOPER:
-        this.myTasks = this.tasks.filter(t => t.assigneeId === this.currentUser!.id);
-        this.assignedTasks = [];
-        break;
-      default:
-        this.myTasks = [];
-        this.assignedTasks = [];
+    let base = this.tasks;
+    if (this.currentUser.role === UserRole.DEVELOPER) {
+      base = base.filter(t => t.assigneeId === this.currentUser!.id);
     }
-    
-    const baseAssigned = this.applyTagProjectFilter(this.assignedTasks);
-    const baseMy = this.applyTagProjectFilter(this.myTasks);
-
-    if (this.currentUser.role === UserRole.PROJECT_LEAD) {
-      this.assignedTasks = baseAssigned;
-      this.myTasks = baseMy;
-      this.filteredTasks = this.assignedTasks;
-    } else if (this.currentUser.role === UserRole.DEVELOPER) {
-      this.myTasks = baseMy;
-      this.filteredTasks = this.myTasks;
-    } else {
-      this.myTasks = baseMy;
-      this.assignedTasks = baseAssigned;
-      this.filteredTasks = this.applyTagProjectFilter(this.tasks);
-    }
+    this.filteredTasks = this.applyFilters(base);
   }
 
   onTagChange(): void {
@@ -108,11 +79,24 @@ export class TasksComponent implements OnInit, OnDestroy {
     this.applyRoleFilter();
   }
 
-  private applyTagProjectFilter(tasks: Task[]): Task[] {
+  onStatusChange(): void {
+    this.applyRoleFilter();
+  }
+
+  private applyFilters(tasks: Task[]): Task[] {
     return tasks.filter(t =>
       (!this.selectedProject || t.projectId === this.selectedProject) &&
-      (!this.selectedTag || t.tags.includes(this.selectedTag))
+      (!this.selectedTag || t.tags.includes(this.selectedTag)) &&
+      (!this.selectedStatus || this.getColumnName(t.projectId, t.columnId) === this.selectedStatus)
     );
+  }
+
+  private updateStatusOptions(): void {
+    const set = new Set<string>();
+    for (const t of this.tasks) {
+      set.add(this.getColumnName(t.projectId, t.columnId));
+    }
+    this.statusOptions = Array.from(set);
   }
 
   editTask(task: Task): void {
@@ -137,10 +121,19 @@ export class TasksComponent implements OnInit, OnDestroy {
   }
 
   canToggleComplete(task: Task): boolean {
-    return !!this.currentUser &&
-      task.assigneeId === this.currentUser.id &&
-      !task.completedAt &&
-      task.columnId !== 'done';
+    if (!this.currentUser || task.completedAt || task.columnId === 'done') {
+      return false;
+    }
+
+    if (this.currentUser.role === UserRole.ADMIN) {
+      return true;
+    }
+
+    if (this.currentUser.role === UserRole.VIEWER) {
+      return false;
+    }
+
+    return task.assigneeId === this.currentUser.id;
   }
 
   toggleComplete(task: Task): void {
